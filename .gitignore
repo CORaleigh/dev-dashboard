@@ -1,0 +1,7 @@
+logs/*
+!.gitkeep
+bower_components/
+tmp
+.DS_Store
+.idea
+app/jspm_packages

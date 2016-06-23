@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en" >
+  <head>
+    <title>Angular Material - Starter App</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <link href='../node_modules/mapbox-gl/dist/mapbox-gl.css' rel='stylesheet' />
+    <link rel='stylesheet' href='http://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic'>
+    <link rel="stylesheet" href="../node_modules/angular-material/angular-material.css"/>
+    <link rel="stylesheet" href="../node_modules/angular-material-data-table/dist/md-data-table.min.css"/>
+    <link rel="stylesheet" href="assets/app.css"/>
+    <link rel="stylesheet" href="../node_modules/mapbox-gl/dist/mapbox-gl.js">
+    <script type="text/javascript" src="../node_modules/moment/min/moment.min.js"></script>
+    <script src="../node_modules/mapbox-gl/dist/mapbox-gl.js"></script>
+    <script src="vendor/turf.min.js"></script>    
+    <style type="text/css">
+        /**
+         * Hide when Angular is not yet loaded and initialized
+         */
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+          display: none !important;
+        }
+    </style>
+
+  </head>
+
+  <body ng-app="starterApp" layout="column" ng-controller="UserController as ul" ng-cloak>
+
+    <md-toolbar layout="row">
+      <md-button class="menu" hide-gt-sm ng-click="ul.toggleList()" aria-label="Show User List">
+        <md-icon md-svg-icon="menu" ></md-icon>
+      </md-button>
+      <h1>DevelopmentDashboard</h1>
+    </md-toolbar>
+
+    <div flex layout="row">
+
+        <md-sidenav  md-is-locked-open="$mdMedia('gt-sm')" md-component-id="left" class="md-whiteframe-z2" >
+      <h3>Search for</h3>        
+      <md-input-container>
+        <label>Search Type</label>
+        <md-select ng-model="ul.selectedSearch" ng-change="ul.devplans = []">
+            <md-option ng-value="search" ng-repeat="(index, search) in ul.searches"  ng-selected="index === 0" >{{search.name}}</md-option>
+        </md-select>
+      </md-input-container>
+      <h3>Between</h3>
+      <md-datepicker ng-model="ul.fromDate" md-placeholder="Enter date"></md-datepicker>
+      <h3>and</h3>
+      <md-datepicker ng-model="ul.toDate" md-placeholder="Enter date"></md-datepicker>
+      <h3>Within</h3>      
+      <md-input-container>
+        <label>Search Type</label>
+        <md-select ng-model="ul.selectedDistance">
+            <md-option ng-value="distance" ng-repeat="(index, distance) in ul.distances" ng-selected="ul.selectedSearch.defaultDistance">{{distance.name}}</md-option>
+        </md-select>
+      </md-input-container>
+      <h3>of</h3>      
+      <md-autocomplete
+          ng-disabled="false"
+          md-no-cache="false"
+          md-selected-item="ul.selectedAddress"
+          md-search-text-change="ul.addressTextChange(ul.addressText)"
+          md-search-text="ul.addressText"
+          md-selected-item-change="ul.selectedItemChange(address)"
+          md-items="address in ul.addressSearch(ul.addressText)"
+          md-item-text="address.attributes.ADDRESS"
+          md-min-length="0"
+          placeholder="Enter your address">
+           <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
+          </md-autocomplete> 
+          <md-button class="md-raised md-primary" ng-click="ul.search()">Search</md-button>
+        </md-sidenav>
+
+        <md-content flex id="content">        
+          <div id="map" ng-style="{'height': (ul.showTable) ? '50%' : '100%'}"><md-button class="md-fab table-button" ng-click="ul.toggleTable()"><md-icon md-svg-icon="view_list" ></md-icon></md-button></div>
+      <div class="table-div" ng-show="ul.showTable">
+      <md-input-container>
+        <label>Filter</label>
+        <input ng-model="ul.filterValue">
+      </md-input-container>
+
+          <data-md-table-pagination md-limit="ul.query.limit" md-limit-options="[5, 10, 25, 50]" md-page="ul.query.page" md-total="{{ul.devplans.length}}" md-page-select="true" md-boundary-links="false">
+
+          </data-md-table-pagination>
+          <md-table-container>
+          <table data-md-table data-md-row-select="true" multiple="false" data-ng-model="selectedRows" md-progress="ul.promise">
+              <thead md-head md-order="ul.selectedSearch.order">
+                <tr md-row>
+                  <th ng-repeat="column in ul.selectedSearch.columns" md-column md-order-by="{{column.order}}"><span>{{column.display}}</span></th>
+                </tr>
+              </thead>
+              <tbody md-body>
+                <tr md-row md-select="devplan" md-auto-select ng-repeat="devplan in ul.devplans | filter: ul.filterValue | orderBy: ul.selectedSearch.order | limitTo: ul.query.limit : (ul.query.page - 1) * ul.query.limit">
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.plan_number}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.plan_name}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.plan_type}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.submitted | date: 'fullDate'}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.status}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.zoning}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.cac}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'"><md-button class="md-primary" ng-href="{{devplan.planurl.url}}" target="_blank">View</md-button></td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.permitnum}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.proposedworkdescription}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.workclass}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.originaladdressfull}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.issueddate | date: 'fullDate'}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.parcelownername}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.contractorcompanyname}}</td>
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.totalsqft | number}}</td> 
+                  <td md-cell ng-if="ul.selectedSearch.name === 'Permits'">{{devplan.estprojectcost | currency}}</td>                                
+                </tr>              
+              </tbody>
+            </table>
+          </md-table-container>
+          </div>
+        </md-content>
+    </div>
+
+    <script src="../node_modules/angular/angular.js"></script>
+    <script src="../node_modules/angular-animate/angular-animate.js"></script>
+    <script src="../node_modules/angular-aria/angular-aria.js"></script>
+    <script type="text/javascript" src="../node_modules/angular-material/angular-material.js"></script>
+    <script type="text/javascript" src="../node_modules/angular-material-data-table/dist/md-data-table.min.js"></script>
+
+    <script src="./src/users/Users.js"></script>
+    <script src="./src/users/UserController.js"></script>
+    <script src="./src/users/UserService.js"></script>
+    <script src="./src/Soda.js"></script>
+    <script src="./src/SodaService.js"></script>    
+    <script type="text/javascript">
+
+          angular
+              .module('starterApp', ['ngMaterial', 'users', 'md.data.table', 'soda'])
+              .config(function($mdThemingProvider, $mdIconProvider){
+
+                  $mdIconProvider
+                      .defaultIconSet("./assets/svg/avatars.svg", 128)
+                      .icon("menu"       , "./assets/svg/menu.svg"        , 24)
+                      .icon("share"      , "./assets/svg/share.svg"       , 24)
+                      .icon("view_list"      , "./assets/svg/view_list.svg"       , 24)
+                      .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
+                      .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
+                      .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)
+                      .icon("phone"      , "./assets/svg/phone.svg"       , 512);
+
+                      $mdThemingProvider.theme('default')
+                          .primaryPalette('blue')
+                          .accentPalette('red');
+
+              });
+
+    </script>
+
+  </body>
+</html>

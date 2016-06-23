@@ -1,0 +1,63 @@
+{
+  "name": "angular-material-data-table",
+  "version": "0.10.9",
+  "description": "Material Design data table.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/daniel-nagy/md-data-table.git"
+  },
+  "main": "index.js",
+  "devDependencies": {
+    "bower": "^1.3.9",
+    "grunt": "^0.4.5",
+    "grunt-autoprefixer": "^2.1.0",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-connect": "^0.8.0",
+    "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-jshint": "^0.10.0",
+    "grunt-contrib-less": "^0.11.4",
+    "grunt-contrib-uglify": "^0.5.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "grunt-html2js": "^0.3.2",
+    "grunt-processhtml": "^0.3.7",
+    "jshint-stylish": "^1.0.0",
+    "load-grunt-tasks": "^0.6.0"
+  },
+  "peerDependencies": {
+    "angular": "^1.4.0",
+    "angular-material": "^1.0.0"
+  },
+  "gitHead": "06e1993154664af5e1571e0abb4d28e76790af19",
+  "bugs": {
+    "url": "https://github.com/daniel-nagy/md-data-table/issues"
+  },
+  "homepage": "https://github.com/daniel-nagy/md-data-table#readme",
+  "_id": "angular-material-data-table@0.10.9",
+  "scripts": {},
+  "_shasum": "a4171898999db13ccae2f4c042b7bc5c57bd4ca7",
+  "_from": "angular-material-data-table@latest",
+  "_npmVersion": "3.8.3",
+  "_nodeVersion": "5.10.1",
+  "_npmUser": {
+    "name": "daniel-nagy",
+    "email": "daniel_nagy@me.com"
+  },
+  "dist": {
+    "shasum": "a4171898999db13ccae2f4c042b7bc5c57bd4ca7",
+    "tarball": "https://registry.npmjs.org/angular-material-data-table/-/angular-material-data-table-0.10.9.tgz"
+  },
+  "maintainers": [
+    {
+      "name": "daniel-nagy",
+      "email": "daniel_nagy@me.com"
+    }
+  ],
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/angular-material-data-table-0.10.9.tgz_1461690559142_0.3837499727960676"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/angular-material-data-table/-/angular-material-data-table-0.10.9.tgz"
+}
