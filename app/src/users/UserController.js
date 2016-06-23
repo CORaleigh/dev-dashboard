@@ -174,31 +174,33 @@
     var lat = 0, lng = 0;
     self.selectedItemChange = function (address) {
       if (address) {
-       // map.flyTo({
-       //  center: [
-       //    address.geometry.x, address.geometry.y
-       //  ],
-       //  zoom: 13
-       //  });   
-        lat = address.geometry.y;
-        lng = address.geometry.x;
-        var pt = {
-          "type": "Feature",
-          "properties": {},
-          "geometry": {
-            "type": "Point",
-            "coordinates": [lng, lat]
-          }
-        };
-        var unit = 'meters';
+       map.flyTo({
+        center: [
+          address.geometry.x, address.geometry.y
+        ],
+        zoom: 13
+        });   
+         if (self.selectedDistance.value > 0) {
+          lat = address.geometry.y;
+          lng = address.geometry.x;
 
-        var buffered = turf.buffer(pt, self.selectedDistance.value, unit);
-        var result = turf.featurecollection([buffered, pt]);
-        map.getSource('buffer').setData(result.features[0].features[0]);
-        //var bbox = turf.bbox(result.features[0].features[0]);
-        //console.log(bbox);
-        self.search();
+          var pt = {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "Point",
+              "coordinates": [lng, lat]
+            }
+          };
+          var unit = 'meters';
 
+          var buffered = turf.buffer(pt, self.selectedDistance.value, unit);
+          var result = turf.featurecollection([buffered, pt]);
+          map.getSource('buffer').setData(result.features[0].features[0]);
+          //var bbox = turf.bbox(result.features[0].features[0]);
+          //console.log(bbox);
+          self.search();
+        }
       }
     }
     self.rowSelected = function () {
@@ -224,7 +226,7 @@
     }, 2000);
       sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
         self.devplans = data;
-        sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField);
+        sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns);
       });
     }
   self.maploaded = false;
@@ -314,7 +316,31 @@
                 ],
             "text-size": 12
         }
-    });                
+    });  
+    var popup = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false
+    });        
+    map.on('click', function (e) {
+        var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
+
+        if (!features.length) {
+            popup.remove();
+            return;
+        }
+
+        var feature = features[0];
+
+        // Populate the popup and set its coordinates
+        // based on the feature found.
+        var html = "";
+        for (var i = 0;i < self.selectedSearch.columns.length;i++) {
+          html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> " + feature.properties[self.selectedSearch.columns[i].name] + "<br/>";
+        }
+        popup.setLngLat(feature.geometry.coordinates)
+            .setHTML(html)
+            .addTo(map);
+    });                  
     });
   }, 200);
   window.onresize = function(event) {

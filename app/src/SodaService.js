@@ -31,7 +31,7 @@
         });
         return promise;
       },
-      dataToGeoJson: function (data, map, longitudeField, latitudeField) {
+      dataToGeoJson: function (data, map, longitudeField, latitudeField, columns) {
         var geojson = {
              "type": "FeatureCollection",
              "features": []
@@ -84,6 +84,14 @@
             }
           } else {
             pt.properties['marker-symbol'] = 'marker-15';
+          }
+          for(var j = 0;j < columns.length;j++) {
+            if (columns[j].name != "planurl" && columns[j].name != "order") {
+              if (!data[i][columns[j].name]) {
+                data[i][columns[j].name] = " ";
+              }
+              pt.properties[columns[j].name] = data[i][columns[j].name];
+            }
           }
           geojson.features.push(pt);
         }
