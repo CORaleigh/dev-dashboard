@@ -222,10 +222,11 @@
         center: [-78.666, 35.777],
         zoom: 10
     });
-    map.addControl(new mapboxgl.Navigation());  
+    map.addControl(new mapboxgl.Navigation()); 
+    $timeout(function () {map.resize()}); 
     map.on('load', function () {
 
-      //map.resize();
+      
       map.addSource('buffer', {
           'type': 'geojson',
           'data': {
@@ -313,6 +314,7 @@
      */
     function toggleUsersList() {
       $mdSidenav('left').toggle();
+
     }
 
     /**
