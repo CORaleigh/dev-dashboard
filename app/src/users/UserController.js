@@ -45,11 +45,18 @@
     self.fromDate = new Date(self.fromDate);
     self.toDate = new Date();
     self.showTable = false;
+    self.showMap = true;
+    self.tableTop = "50%"
     self.toggleTable = function () {
       self.showTable = !self.showTable;
+      if (window.innerWidth < 500) {
+        self.showMap = !self.showMap;
+        self.tableTop = "0";
+      }
       $timeout(function () {
         map.resize();
       });
+      console.log('toggle')
     };
     self.searches = 
       [{name: 'Development Plans', 
@@ -194,6 +201,14 @@
 
       }
     }
+    self.rowSelected = function () {
+      map.flyTo({
+        center: [
+          this.model[self.selectedSearch.longitudeField], this.model[self.selectedSearch.latitudeField]
+        ],
+        zoom: 17
+      }); 
+    }
     // Load all registered users
 
     userService
@@ -217,8 +232,8 @@
   $timeout(function () {
     map = new mapboxgl.Map({
         container: 'map', // container id
-        style: 'mapbox://styles/raleighgis/cipr5l4830008b6nrf0g2r411',
-        pitch: 45,
+        style: 'mapbox://styles/raleighgis/cipspt1jp000kbkm4ld3cntvd',
+        pitch: 60,
         center: [-78.666, 35.777],
         zoom: 10
     });
@@ -257,7 +272,7 @@
           "type": "symbol",
           "source": "points",
           "layout": {
-              "icon-image": "marker-15"
+              "icon-image": "{marker-symbol}"
           },
           "paint": {},
           "interactive": true

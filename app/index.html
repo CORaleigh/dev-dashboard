@@ -73,26 +73,26 @@
           <md-button class="md-raised md-primary" ng-click="ul.search()">Search</md-button>
         </md-sidenav>
 
-        <md-content flex id="content">        
-          <div id="map" ng-style="{'height': (ul.showTable) ? '50%' : '100%'}"><md-button class="md-fab table-button" ng-click="ul.toggleTable()"><md-icon md-svg-icon="view_list" ></md-icon></md-button></div>
-      <div class="table-div" ng-show="ul.showTable">
+        <md-content flex id="content">   
+<md-button class="md-fab table-button" ng-click="ul.toggleTable()"><md-icon md-svg-icon="view_list" ></md-icon></md-button>             
+          <div id="map" ng-style="{'height': (ul.showTable) ? '50%' : '100%'}" ng-show="ul.showMap"></div>
+      <div class="table-div" ng-show="ul.showTable" ng-style="{'top': ul.tableTop}">
       <md-input-container>
         <label>Filter</label>
         <input ng-model="ul.filterValue">
       </md-input-container>
-
           <data-md-table-pagination md-limit="ul.query.limit" md-limit-options="[5, 10, 25, 50]" md-page="ul.query.page" md-total="{{ul.devplans.length}}" md-page-select="true" md-boundary-links="false">
 
           </data-md-table-pagination>
           <md-table-container>
-          <table data-md-table data-md-row-select="true" multiple="false" data-ng-model="selectedRows" md-progress="ul.promise">
+          <table data-md-table data-md-row-select="true" multiple="false" data-ng-model="selectedRows" md-progress="ul.promise" >
               <thead md-head md-order="ul.selectedSearch.order">
                 <tr md-row>
                   <th ng-repeat="column in ul.selectedSearch.columns" md-column md-order-by="{{column.order}}"><span>{{column.display}}</span></th>
                 </tr>
               </thead>
               <tbody md-body>
-                <tr md-row md-select="devplan" md-auto-select ng-repeat="devplan in ul.devplans | filter: ul.filterValue | orderBy: ul.selectedSearch.order | limitTo: ul.query.limit : (ul.query.page - 1) * ul.query.limit">
+                <tr md-row md-select="devplan" md-auto-select ng-repeat="devplan in ul.devplans | filter: ul.filterValue | orderBy: ul.selectedSearch.order | limitTo: ul.query.limit : (ul.query.page - 1) * ul.query.limit" data-md-on-select="ul.rowSelected">
                   <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.plan_number}}</td>
                   <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.plan_name}}</td>
                   <td md-cell ng-if="ul.selectedSearch.name === 'Development Plans'">{{devplan.plan_type}}</td>

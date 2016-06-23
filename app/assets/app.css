@@ -16,9 +16,14 @@ html, body {
   width: 36px;
 }
 .table-button {
-    position: absolute;
+    position: fixed;
     bottom: 2em;
     right: 1em;
+    opacity: 0.8;
+}
+
+.md-table-pagination {
+  justify-content: flex-start;
 }
 
 
