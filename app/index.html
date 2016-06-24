@@ -46,13 +46,13 @@
         </md-select>
       </md-input-container>
       <h3>Between</h3>
-      <md-datepicker ng-model="ul.fromDate" md-placeholder="Enter date"></md-datepicker>
+      <md-datepicker ng-model="ul.fromDate" md-placeholder="Enter date" ng-change="ul.search()"></md-datepicker>
       <h3>and</h3>
-      <md-datepicker ng-model="ul.toDate" md-placeholder="Enter date"></md-datepicker>
+      <md-datepicker ng-model="ul.toDate" md-placeholder="Enter date" ng-change="ul.search()"></md-datepicker>
       <h3>Within</h3>      
       <md-input-container>
         <label>Search Type</label>
-        <md-select ng-model="ul.selectedDistance">
+        <md-select ng-model="ul.selectedDistance" ng-change="ul.distanceChanged(ul.selectedDistance.value)">
             <md-option ng-value="distance" ng-repeat="(index, distance) in ul.distances" ng-selected="ul.selectedSearch.defaultDistance">{{distance.name}}</md-option>
         </md-select>
       </md-input-container>

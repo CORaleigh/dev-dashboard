@@ -158,10 +158,23 @@ span.name {
 .mapboxgl-canvas {
   outline: none;
 }
+.mapboxgl-popup-content {
+  font-family: 'Roboto', sans-serif;
+/*  background-color: rgba(20,20,20,0.9);
+  color: white; */ 
+}
+.mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
+/*  color: rgba(20,20,20,0.9);*/
+
+}
 md-sidenav {
   padding: 1em;
 }
 
 md-input-container {
+  width: 100%;
+}
+
+.md-raised {
   width: 100%;
 }

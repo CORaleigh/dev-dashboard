@@ -15,7 +15,9 @@
             url: 'https://data.raleighnc.gov/resource/'+id+'.json', 
             method: "GET",
             params: {
-              '$where': where
+              '$where': where,
+              '$limit': 2000,
+              '$order': dateField + ' DESC'
             }
          }).then(function (response) {
           var data = response.data;
@@ -31,7 +33,7 @@
         });
         return promise;
       },
-      dataToGeoJson: function (data, map, longitudeField, latitudeField, columns) {
+      dataToGeoJson: function (data, map, longitudeField, latitudeField, columns, dateField) {
         var geojson = {
              "type": "FeatureCollection",
              "features": []
@@ -86,11 +88,18 @@
             pt.properties['marker-symbol'] = 'marker-15';
           }
           for(var j = 0;j < columns.length;j++) {
-            if (columns[j].name != "planurl" && columns[j].name != "order") {
+            if (columns[j].name === dateField) {
+              pt.properties[columns[j].name] = moment(data[i][columns[j].name]).format('LL');
+            }
+            else if (columns[j].name != "planurl") {
               if (!data[i][columns[j].name]) {
                 data[i][columns[j].name] = " ";
               }
               pt.properties[columns[j].name] = data[i][columns[j].name];
+            } else {
+              if (data[i][columns[j].name]) {
+                pt.properties[columns[j].name] = data[i][columns[j].name].url;
+              }
             }
           }
           geojson.features.push(pt);
@@ -99,5 +108,4 @@
       }
     };
   }
-
 })();

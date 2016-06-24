@@ -91,7 +91,7 @@
           {
             display: 'Status',
             name: 'status',
-            name: 'order'
+            order: 'status'
           },
           {
             display: 'Zoning',
@@ -164,7 +164,11 @@
           }          
       ]}];
     self.distances = [{name: '1/4 mile', value: 402.335}, {name: '1/2 mile', value: 804.67}, {name: '1 mile', value: 1609.34}, {name: '2 miles', value: 3218.68}, {name: 'All', value: 0}];
-
+    self.distanceChanged = function (distance) {
+      if (distance > 0 && self.selectedAddress) {
+        self.selectedItemChange(self.selectedAddress);
+      }
+    }
     self.addressSearch = function(addressText){
       return $http.get("https://maps.raleighnc.gov/arcgis/rest/services/Addresses/MapServer/0/query?returnGeometry=true&outSR=4326&geometryPrecision=5&f=json&orderByFields=ADDRESS&where=ADDRESSU like '"+addressText.toUpperCase()+"%'")
       .then(function(result){
@@ -223,10 +227,10 @@
     self.search = function () {
       self.promise =  $timeout(function () {
 
-    }, 2000);
+      }, 2000);
       sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
         self.devplans = data;
-        sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns);
+        sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
       });
     }
   self.maploaded = false;
@@ -240,6 +244,7 @@
         zoom: 10
     });
     map.addControl(new mapboxgl.Navigation()); 
+    map.addControl(new mapboxgl.Geolocate({position: 'top-left'}));    
     $timeout(function () {map.resize()}); 
     map.on('load', function () {
 
@@ -318,7 +323,7 @@
         }
     });  
     var popup = new mapboxgl.Popup({
-        closeButton: false,
+        closeButton: true,
         closeOnClick: false
     });        
     map.on('click', function (e) {
@@ -335,7 +340,12 @@
         // based on the feature found.
         var html = "";
         for (var i = 0;i < self.selectedSearch.columns.length;i++) {
-          html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> " + feature.properties[self.selectedSearch.columns[i].name] + "<br/>";
+          html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> ";
+          if (self.selectedSearch.columns[i].name === 'planurl') {
+            html += "<a href='"+feature.properties[self.selectedSearch.columns[i].name] + "' target='_blank'>View</a><br/>";
+          } else {
+            html += feature.properties[self.selectedSearch.columns[i].name] +"<br/>"
+          }
         }
         popup.setLngLat(feature.geometry.coordinates)
             .setHTML(html)
