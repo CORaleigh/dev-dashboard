@@ -1,0 +1,30 @@
+<md-dialog aria-label="Marker Key"  ng-cloak>
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Marker Key</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="assets/svg/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-grid-list
+              md-cols="3" md-cols-sm="3" md-cols-md="4" md-cols-gt-md="4"
+              md-row-height-gt-md="1:1" md-row-height="4:3"
+              md-gutter="8px" md-gutter-gt-sm="4px" >      
+          <md-grid-tile ng-repeat="tile in tiles"
+                        md-rowspan="1"
+                        md-colspan="1"
+                        md-colspan-sm="1"
+                        md-colspan-xs="1"
+                        ng-class="tile.background" >
+            <md-icon class="key-icon" md-svg-icon="{{tile.icon}}"></md-icon>
+            <md-grid-tile-footer><h3>{{tile.title}}</h3></md-grid-tile-footer>
+          </md-grid-tile> 
+        </md-grid-list>     
+      </div>
+  </form>
+</md-dialog>
