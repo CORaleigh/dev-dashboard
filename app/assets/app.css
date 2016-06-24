@@ -15,21 +15,39 @@ html, body {
   margin: 16px;
   width: 36px;
 }
-.table-button {
-    position: fixed;
+.table-button.with-map {
+    position: absolute;
     bottom: 2em;
     right: 1em;
     opacity: 0.8;
 }
-.key-button {
-    position: fixed;
+.key-button.with-map {
+    position: absolute;
     bottom: 7em;
     right: 1em;
     opacity: 0.8;
 }
-.heat-button {
-    position: fixed;
+.heat-button.with-map {
+    position: absolute;
     bottom: 12em;
+    right: 1em;
+    opacity: 0.8;
+}
+.table-button {
+    position: absolute;
+    bottom: 2em;
+    right: 1em;
+    opacity: 0.8;
+}
+.key-button.with-table {
+    position: absolute;
+    bottom: 28em;
+    right: 1em;
+    opacity: 0.8;
+}
+.heat-button.with-table {
+    position: absolute;
+    bottom: 34em;
     right: 1em;
     opacity: 0.8;
 }
