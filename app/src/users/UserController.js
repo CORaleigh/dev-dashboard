@@ -4,7 +4,7 @@
        .module('users')
        .controller('UserController', [
           'userService', 'sodaService', '$mdSidenav', '$mdBottomSheet', '$timeout', '$log', '$http',
-          '$scope', UserController
+          '$scope', '$mdDialog', '$mdMedia', UserController
        ]);
 
   /**
@@ -14,7 +14,7 @@
    * @param avatarsService
    * @constructor
    */
-  function UserController( userService, sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope) {
+  function UserController( userService, sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope, $mdDialog, $mdMedia) {
       $scope.options = {
     rowSelection: true,
     multiSelect: false,
@@ -29,6 +29,8 @@
 
     $scope.filter = {show: false}
     var map = null;
+    var mapClickPt = null;
+    var clicked = null;
     var self = this;
     $scope.selectedRows = [];
     self.users = [ ];
@@ -56,7 +58,6 @@
       $timeout(function () {
         map.resize();
       });
-      console.log('toggle')
     };
     self.searches = 
       [{name: 'Development Plans', 
@@ -165,8 +166,8 @@
       ]}];
     self.distances = [{name: '1/4 mile', value: 402.335}, {name: '1/2 mile', value: 804.67}, {name: '1 mile', value: 1609.34}, {name: '2 miles', value: 3218.68}, {name: 'All', value: 0}];
     self.distanceChanged = function (distance) {
-      if (distance > 0 && self.selectedAddress) {
-        self.selectedItemChange(self.selectedAddress);
+      if (distance > 0 && (self.selectedAddress || mapClickPt)) {
+        bufferAddress((clicked) ? mapClickPt : self.selectedAddress);
       }
     }
     self.addressSearch = function(addressText){
@@ -177,6 +178,10 @@
     }
     var lat = 0, lng = 0;
     self.selectedItemChange = function (address) {
+      clicked = false;
+      bufferAddress(address);
+    }
+    var bufferAddress = function (address) {
       if (address) {
        map.flyTo({
         center: [
@@ -201,8 +206,14 @@
           var buffered = turf.buffer(pt, self.selectedDistance.value, unit);
           var result = turf.featurecollection([buffered, pt]);
           map.getSource('buffer').setData(result.features[0].features[0]);
-          //var bbox = turf.bbox(result.features[0].features[0]);
-          //console.log(bbox);
+          var bbox = turf.extent(result.features[0].features[0]);
+              map.fitBounds([[
+                  bbox[0],
+                  bbox[1]
+              ], [
+                  bbox[2],
+                  bbox[3]
+              ]]);
           self.search();
         }
       }
@@ -233,6 +244,34 @@
         sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
       });
     }
+
+    self.showKey = function (e) {
+      var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && $scope.customFullscreen;
+      $mdDialog.show({
+        controller: KeyController,
+        templateUrl: 'src/key.html',
+        parent: angular.element(document.body),
+        clickOutsideToClose:true,
+        fullscreen: true
+      });     
+    }
+    function KeyController($scope, $mdDialog) {
+      $scope.tiles = [
+        {title: 'ADMINISTRATIVE SITE REVIEW', icon: 'sitereview'}, {title: 'INFILL RECOMBINATION', icon: 'infill'}, {title: 'GROUP HOUSING', icon: 'grouphousing'}, {title: 'MASTER PLAN', icon:'masterplan'},
+        {title: 'MINOR SUBDIVISION', icon:'minorsubdivision'}, {title: 'PLAN APPROVAL', icon: 'planapproval'}, {title: 'SHOPPING CENTER', icon: 'shoppingcenter'}, {title: 'SITE PLAN', icon: 'siteplan'}, 
+        {title: 'SPECIAL USE', icon: 'specialuse'}, {title: 'SUBDIVISION', icon: 'subdivision'}              
+      ];
+      $scope.hide = function() {
+        $mdDialog.hide();
+      };
+      $scope.cancel = function() {
+        $mdDialog.cancel();
+      };
+      $scope.answer = function(answer) {
+        $mdDialog.hide(answer);
+      };
+    }    
+
   self.maploaded = false;
   mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';
   $timeout(function () {
@@ -244,7 +283,15 @@
         zoom: 10
     });
     map.addControl(new mapboxgl.Navigation()); 
-    map.addControl(new mapboxgl.Geolocate({position: 'top-left'}));    
+    map.addControl(new mapboxgl.Geolocate({position: 'top-left'}).on('geolocate', function (data) {
+        map.setPitch(60);
+        if (self.selectedDistance.value > 0) {
+          clicked = true;
+          mapClickPt = {geometry: { x: data.coords.longitude, y: data.coords.latitude}};
+          bufferAddress(mapClickPt);
+        }
+      }
+    ));    
     $timeout(function () {map.resize()}); 
     map.on('load', function () {
 
@@ -252,6 +299,8 @@
       map.addSource('buffer', {
           'type': 'geojson',
           'data': {
+            "type": "FeatureCollection",
+             "features": []
           }
       });
       map.addLayer({
@@ -325,12 +374,25 @@
     var popup = new mapboxgl.Popup({
         closeButton: true,
         closeOnClick: false
-    });        
+    });  
+    map.on('mousemove', function (e) {   
+      var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
+
+        map.getCanvas().style.cursor = features.length ? 'pointer' : '';
+
+    });       
     map.on('click', function (e) {
         var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
 
         if (!features.length) {
             popup.remove();
+            if (self.selectedDistance.value > 0) {
+              clicked = true;
+              lng = e.lngLat.lng;
+              lat = e.lngLat.lat;
+              mapClickPt = {attributes: {ADDRESS: " "} ,geometry: {x: e.lngLat.lng, y: e.lngLat.lat}};
+              bufferAddress({geometry: {x: e.lngLat.lng, y: e.lngLat.lat}});
+            }
             return;
         }
 
@@ -410,6 +472,8 @@
         }
 
     }
+
+
 
   }
 

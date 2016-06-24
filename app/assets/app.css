@@ -21,7 +21,12 @@ html, body {
     right: 1em;
     opacity: 0.8;
 }
-
+.key-button {
+    position: fixed;
+    bottom: 7em;
+    right: 1em;
+    opacity: 0.8;
+}
 .md-table-pagination {
   justify-content: flex-start;
 }
@@ -59,9 +64,7 @@ md-datepicker {
 
 
 #content  {
-  padding-left: 0px;
-  padding-right: 0px;
-  padding-top: 5px;
+  padding: 0;
 }
 
 #content .md-button.share {
@@ -177,4 +180,22 @@ md-input-container {
 
 .md-raised {
   width: 100%;
+}
+
+md-dialog {
+  min-width: 600px;
+}
+
+.key-icon {
+  height: 60px;
+  width: 60px;
+}
+.key-icon svg {
+  height: 60px;
+  width: 60px;
+}
+
+md-grid-tile-footer {
+  background: rgba(0,0,0,0.4) !important;
+  text-align: center;
 }
