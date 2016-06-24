@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" >
   <head>
-    <title>Angular Material - Starter App</title>
+    <title>DevelopmentDashboard - City of Raleigh</title>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -74,17 +74,23 @@
         </md-sidenav>
 
         <md-content flex id="content">   
+        <md-button class="md-fab heat-button" ng-show="ul.showMap" ng-click="ul.toggleDataDisplay()">
+          <md-tooltip md-direction="left">
+            {{ul.cluster ? 'Show Heat Map' : 'Show Cluster'}}
+          </md-tooltip>          
+          <md-icon md-svg-icon="{{ul.cluster ? 'hot' : 'place'}}" ></md-icon>
+        </md-button>          
         <md-button class="md-fab key-button" ng-show="ul.showMap" ng-click="ul.showKey($event)">
           <md-tooltip md-direction="left">
             Marker Key
           </md-tooltip>          
-          <md-icon md-svg-icon="place" ></md-icon>
+          <md-icon md-svg-icon="key" ></md-icon>
         </md-button>  
         <md-button class="md-fab table-button" ng-click="ul.toggleTable()">
           <md-tooltip md-direction="left">
-            {{(ul.showTable) ? 'Hide Table' : 'Show Table'}}
+            {{(ul.showTable) ? 'Show Map' : 'Show Table'}}
           </md-tooltip>           
-          <md-icon md-svg-icon="view_list" ></md-icon>
+          <md-icon md-svg-icon="{{(ul.showTable) ? 'map' : 'view_list'}}" ></md-icon>
         </md-button> 
 
           <div id="map" ng-style="{'height': (ul.showTable) ? '50%' : '100%'}" ng-show="ul.showMap"></div>
@@ -152,7 +158,10 @@
                       .icon("menu"       , "./assets/svg/menu.svg"        , 24)
                       .icon("share"      , "./assets/svg/share.svg"       , 24)
                       .icon("view_list"      , "./assets/svg/view_list.svg", 24)
+                      .icon("map"      , "./assets/svg/ic_map_white_24px.svg", 24)
                       .icon("place"      , "./assets/svg/place.svg", 24)
+                      .icon("key"      , "./assets/svg/ic_vpn_key_white_24px.svg", 24)
+                      .icon("hot"      , "./assets/svg/ic_whatshot_white_24px.svg", 24)
                       .icon("google_plus", "./assets/svg/google_plus.svg" , 512)
                       .icon("hangouts"   , "./assets/svg/hangouts.svg"    , 512)
                       .icon("twitter"    , "./assets/svg/twitter.svg"     , 512)

@@ -46,9 +46,10 @@
     self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 365);
     self.fromDate = new Date(self.fromDate);
     self.toDate = new Date();
+    self.cluster = true;
     self.showTable = false;
     self.showMap = true;
-    self.tableTop = "50%"
+    self.tableTop = "50%";
     self.toggleTable = function () {
       self.showTable = !self.showTable;
       if (window.innerWidth < 500) {
@@ -58,6 +59,24 @@
       $timeout(function () {
         map.resize();
       });
+    };
+    self.toggleDataDisplay = function () {
+      self.cluster = !self.cluster;
+      var params = self.cluster ? self.layers : self.heatLayers;
+      var layer = null;
+      var layerName = "";
+      for (var i = 0; i < params.length; i++) {
+        layerName =  'cluster-' + i.toString();
+        layer = map.getLayer(layerName);
+        map.setPaintProperty(layerName, 'circle-color', params[i][1]);
+        map.setPaintProperty(layerName, 'circle-radius', self.cluster ? 18 : 70);
+        map.setPaintProperty(layerName, 'circle-blur', self.cluster ? 0 : 1); 
+        map.setFilter(layerName, i == 0 ?
+                [">=", "point_count", params[i][0]] :
+                ["all",
+                    [">=", "point_count", params[i][0]],
+                    ["<", "point_count", params[i - 1][0]]]);                
+      }
     };
     self.searches = 
       [{name: 'Development Plans', 
@@ -246,13 +265,13 @@
     }
 
     self.showKey = function (e) {
-      var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'))  && $scope.customFullscreen;
+      var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
       $mdDialog.show({
         controller: KeyController,
         templateUrl: 'src/key.html',
         parent: angular.element(document.body),
         clickOutsideToClose:true,
-        fullscreen: true
+        fullscreen: useFullScreen
       });     
     }
     function KeyController($scope, $mdDialog) {
@@ -280,8 +299,7 @@
         style: 'mapbox://styles/raleighgis/cipspt1jp000kbkm4ld3cntvd',
         pitch: 60,
         center: [-78.666, 35.777],
-        zoom: 10
-    });
+        zoom: 10});
     map.addControl(new mapboxgl.Navigation()); 
     map.addControl(new mapboxgl.Geolocate({position: 'top-left'}).on('geolocate', function (data) {
         map.setPitch(60);
@@ -336,13 +354,17 @@
     // Cluster categories
     var highCount = 75,
         lowCount = 15;    
-    var layers = [
+    self.layers = [
         [150, '#f28cb1'],
         [20, '#f1f075'],
         [0, '#51bbd6']
     ];
-
-    layers.forEach(function (layer, i) {
+    self.heatLayers = [
+        [50, 'red'],
+        [20, 'orange'],
+        [0, 'green']
+    ];
+    self.layers.forEach(function (layer, i) {
         map.addLayer({
             "id": "cluster-" + i,
             "type": "circle",
@@ -355,7 +377,7 @@
                 [">=", "point_count", layer[0]] :
                 ["all",
                     [">=", "point_count", layer[0]],
-                    ["<", "point_count", layers[i - 1][0]]]
+                    ["<", "point_count", self.layers[i - 1][0]]]
         });
     });    
     map.addLayer({

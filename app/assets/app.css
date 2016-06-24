@@ -27,6 +27,12 @@ html, body {
     right: 1em;
     opacity: 0.8;
 }
+.heat-button {
+    position: fixed;
+    bottom: 12em;
+    right: 1em;
+    opacity: 0.8;
+}
 .md-table-pagination {
   justify-content: flex-start;
 }
