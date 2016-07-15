@@ -3,7 +3,7 @@
 "name": "Basic",
 "sources": {
 "mapbox": {
-"url": "https://osm2vectortiles.tileserver.com/v2.json",
+"url": "v2.json",
 "type": "vector"
 }
 },

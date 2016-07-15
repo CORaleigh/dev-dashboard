@@ -3337,8 +3337,15 @@
 "subdivision": {
 "width": 60,
 "height": 60,
-"x": 723,
+"x": 718,
 "y": 337,
+"pixelRatio": 2
+},
+"permit": {
+"width": 60,
+"height": 60,
+"x": 240,
+"y": 396,
 "pixelRatio": 2
 }
 }

@@ -81,11 +81,11 @@
                 pt.properties['marker-symbol'] = 'sitereview';
               break;                
               default:
-                pt.properties['marker-symbol'] = 'marker-15';
+                pt.properties['marker-symbol'] = 'permit';
               break;     
             }
           } else {
-            pt.properties['marker-symbol'] = 'marker-15';
+            pt.properties['marker-symbol'] = 'permit';
           }
           for(var j = 0;j < columns.length;j++) {
             if (columns[j].name === dateField) {
