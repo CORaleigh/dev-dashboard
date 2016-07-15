@@ -727,6 +727,47 @@
 "interactive": true,
 "minzoom": 8,
 "layout": {
+"text-field": "{ref}",
+"text-font": [
+"Open Sans Semibold"
+],
+"text-size": 11,
+"icon-image": "Road/Rectangle white black (Alt)/6",
+"symbol-placement": {
+"base": 1,
+"stops": [
+[
+10,
+"point"
+],
+[
+11,
+"line"
+]
+]
+},
+"symbol-spacing": 500,
+"text-rotation-alignment": "viewport",
+"icon-rotation-alignment": "viewport"
+},
+"metadata": {
+"mapbox:group": "1456163609504.0715"
+},
+"filter": [
+"<=",
+"reflen",
+6
+],
+"type": "symbol",
+"source": "mapbox",
+"id": "road_label_highway_shield",
+"paint": {"text-color": "#FFF"},
+"source-layer": "road_label"
+},
+{
+"interactive": true,
+"minzoom": 8,
+"layout": {
 "text-field": "{name_en}",
 "text-font": [
 "Open Sans Semibold"
