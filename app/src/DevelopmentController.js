@@ -3,9 +3,9 @@
   .module('development')
   .controller('DevelopmentController', [
     'sodaService', '$mdSidenav', '$mdBottomSheet', '$timeout', '$log', '$http',
-    '$scope', '$mdDialog', '$mdMedia', DevelopmentController
+    '$scope', '$mdDialog', '$mdMedia', '$mdToast', DevelopmentController
   ]);
-  function DevelopmentController( sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope, $mdDialog, $mdMedia) {
+  function DevelopmentController( sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope, $mdDialog, $mdMedia, $mdToast) {
     $scope.filter = {show: false}
     var map = null,mapClickPt = null,clicked = null,lat = 0, lng = 0;;
     var self = this;
@@ -23,7 +23,10 @@
     self.cluster = true;
     self.showTable = false;
     self.showMap = true;
-    self.tableTop = "50%";
+    self.tableTop = "40%";
+    self.toggleFilter = function () {
+      self.showFilter = !self.showFilter;
+    }
     self.toggleTable = function () {
       self.showTable = !self.showTable;
       if (window.innerWidth < 500) {
@@ -235,6 +238,7 @@
           fullscreen: useFullScreen
         });
       }
+  
       function KeyController($scope, $mdDialog) {
         $scope.tiles = [
           {title: 'ADMINISTRATIVE SITE REVIEW', icon: 'sitereview'}, {title: 'INFILL RECOMBINATION', icon: 'infill'}, {title: 'GROUP HOUSING', icon: 'grouphousing'}, {title: 'MASTER PLAN', icon:'masterplan'},
@@ -262,6 +266,7 @@
 
       }      
       var createMap = function () {
+
         mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';
         map = new mapboxgl.Map({
           container: 'map', // container id

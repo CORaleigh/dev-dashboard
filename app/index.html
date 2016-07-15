@@ -16,8 +16,6 @@
   <script src="vendor/turf.min.js"></script>
     <!-- Leaflet -->
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.css" />
-    <script src="http://cdn.leafletjs.com/leaflet/v1.0.0-beta.2/leaflet.js"></script>
-    <script src="vendor/leaflet-mapbox-gl.js"></script>  
   <style type="text/css">
 
   /**
@@ -31,12 +29,16 @@
 <body ng-app="starterApp" layout="column" ng-controller="DevelopmentController as vm" ng-cloak>
   <md-toolbar layout="row">
     <md-button class="menu" hide-gt-sm ng-click="vm.toggleList()" aria-label="Show User List">
-      <md-icon md-svg-icon="menu" ></md-icon>
+      <md-icon md-svg-icon="search" ></md-icon>
     </md-button>
     <h1>DevelopmentDashboard</h1>
   </md-toolbar>
   <div flex layout="row">
     <md-sidenav  md-is-locked-open="$mdMedia('gt-sm')" md-component-id="left" class="md-whiteframe-z2" >
+    <md-toolbar layout="row">
+      <h1>Search</h1>
+    </md-toolbar>
+    <div class="content">
       <h3>Search for</h3>
       <md-input-container>
         <label>Search Type</label>
@@ -70,9 +72,10 @@
       <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
     </md-autocomplete>
     <md-button class="md-raised md-primary" ng-click="vm.search()">Search</md-button>
+    </div>
   </md-sidenav>
   <md-content flex id="content">
-    <md-button class="md-fab heat-button" ng-show="vm.showMap" ng-click="vm.toggleDataDisplay()" ng-class="{'with-map': vm.showMap && !vm.showTable, 'with-table': vm.showTable}">
+<!--     <md-button class="md-fab heat-button" ng-show="vm.showMap" ng-click="vm.toggleDataDisplay()" ng-class="{'with-map': vm.showMap && !vm.showTable, 'with-table': vm.showTable}">
       <md-tooltip md-direction="left">
         {{vm.cluster ? 'Show Heat Map' : 'Show Cluster'}}
       </md-tooltip>
@@ -84,18 +87,38 @@
       </md-tooltip>
       <md-icon md-svg-icon="key" ></md-icon>
     </md-button>
-    <md-button class="md-fab table-button" ng-click="vm.toggleTable()">
+    <md-button class="md-fab table-button" ng-click="vm.toggleTable()"  ng-class="{'with-map': vm.showMap && !vm.showTable, 'with-table': vm.showTable}">
       <md-tooltip md-direction="left">
         {{(vm.showTable) ? 'Show Map' : 'Show Table'}}
       </md-tooltip>
       <md-icon md-svg-icon="{{(vm.showTable) ? 'map' : 'view_list'}}" ></md-icon>
-    </md-button>
-    <div id="map" ng-style="{'height': (vm.showTable) ? '50%' : '100%'}" ng-show="vm.showMap"></div>
+    </md-button> -->
+   
+    <div id="map" ng-style="{'height': (vm.showTable) ? '40%' : '100%'}" ng-show="vm.showMap">    
+      <md-fab-toolbar md-open="demo.isOpen" count="demo.count"
+                      md-direction="left">
+        <md-fab-trigger class="align-with-text">
+          <md-button aria-label="menu" class="md-fab">
+            <md-icon md-svg-src="menu"></md-icon>
+          </md-button>
+        </md-fab-trigger>
+        <md-toolbar>
+          <md-fab-actions class="md-toolbar-tools">
+            <md-button ng-click="vm.toggleDataDisplay()">{{vm.cluster ? 'Heat Map' : 'Cluster'}}</md-button>
+            <md-button ng-click="vm.showKey($event)">KEY</md-button>
+            <md-button ng-click="vm.toggleTable()">{{(vm.showTable) ? 'Hide Table' : 'Show Table'}}</md-button>
+          </md-fab-actions>
+        </md-toolbar>
+      </md-fab-toolbar> 
+    </div>
     <div class="table-div" ng-show="vm.showTable" ng-style="{'top': vm.tableTop}">
-      <md-input-container>
+      <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
+        <md-icon md-svg-icon="filter"></md-icon>
+      </md-button>      
+      <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
         <label>Filter</label>
         <input ng-model="vm.filterValue">
-      </md-input-container>
+      </md-input-container>     
       <data-md-table-pagination md-limit="vm.query.limit" md-limit-options="[5, 10, 25, 50]" md-page="vm.query.page" md-total="{{vm.devplans.length}}" md-page-select="true" md-boundary-links="false">
       </data-md-table-pagination>
       <md-table-container>
@@ -166,7 +189,9 @@ angular
   .icon("siteplan", "./assets/svg/siteplan.svg", 60)
   .icon("sitereview", "./assets/svg/sitereview.svg", 60)
   .icon("specialuse", "./assets/svg/specialuse.svg", 60)
-  .icon("subdivision", "./assets/svg/subdivision.svg", 60);
+  .icon("subdivision", "./assets/svg/subdivision.svg", 60)
+  .icon("filter", "./assets/svg/ic_filter_list_white_24px.svg", 24)
+  .icon("search", "./assets/svg/ic_search_white_24px.svg", 24);  
   $mdThemingProvider.theme('default')
   .primaryPalette('blue')
   .accentPalette('red');

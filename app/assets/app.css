@@ -7,7 +7,12 @@ html, body {
 }
 
 /* Toolbar area */
-
+.md-fab-toolbar {
+  position: absolute;
+  bottom: 2em;
+  left: 2em;
+  right: 2em;
+}
 .menu {
   background-color: transparent;
   border: none;
@@ -36,6 +41,12 @@ html, body {
 .table-button {
     position: absolute;
     bottom: 2em;
+    right: 1em;
+    opacity: 0.8;
+}
+.table-button.with-table {
+    position: absolute;
+    bottom: 25em;
     right: 1em;
     opacity: 0.8;
 }
@@ -89,6 +100,7 @@ md-datepicker {
 
 #content  {
   padding: 0;
+  overflow: hidden !important;
 }
 
 #content .md-button.share {
@@ -159,7 +171,14 @@ md-toolbar h1 {
   -webkit-transform: scale(0.70);
   -moz-transform:scale(0.70);
 }
-
+md-table-container {
+    overflow: auto;
+    position: absolute;
+    width: 100%;
+    left: 0;
+    height: 500px;
+    right: 0;
+}
 
 md-bottom-sheet  md-icon {
   margin-right:20px;
@@ -173,7 +192,8 @@ span.name {
 
 .table-div {
   position: absolute;
-  top: 50%;
+  width: 100%;
+  top: 40%;
 }
 
 #map {
@@ -188,18 +208,37 @@ span.name {
 .mapboxgl-popup-content {
   font-family: 'Roboto', sans-serif;
 /*  background-color: rgba(20,20,20,0.9);
-  color: white; */ 
+  color: white; */
 }
 .mapboxgl-popup-anchor-bottom .mapboxgl-popup-tip {
 /*  color: rgba(20,20,20,0.9);*/
 
 }
 md-sidenav {
+  padding: 0;
+}
+
+md-sidenav md-toolbar {
+  padding-left: 1em;
+}
+md-sidenav .content {
   padding: 1em;
+}
+
+md-sidenav .md-button {
+  margin: 1em 0;
 }
 
 md-input-container {
   width: 100%;
+}
+
+figcaption {
+  width: 100%;
+}
+
+figcaption h3 {
+  margin: 0 !important;
 }
 
 .md-raised {
@@ -222,4 +261,17 @@ md-dialog {
 md-grid-tile-footer {
   background: rgba(0,0,0,0.4) !important;
   text-align: center;
+}
+
+data-md-table-pagination {
+  display: inline-flex !important;
+}
+#filterButton {
+
+  top: 5px;
+  display: inline-flex !important;
+}
+
+#filterButton svg{
+  fill: #777;
 }
