@@ -267,10 +267,10 @@
       }      
       var createMap = function () {
 
-        mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';
+        mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';    
         map = new mapboxgl.Map({
           container: 'map', // container id
-          style: 'mapbox://styles/raleighgis/cipspt1jp000kbkm4ld3cntvd',
+          style: 'vector-tiles.json',
           pitch: 60,
           center: [-78.666, 35.777],
           zoom: 10});
@@ -353,8 +353,7 @@
               "layout": {
                 "text-field": "{point_count}",
                 "text-font": [
-                  "DIN Offc Pro Medium",
-                  "Arial Unicode MS Bold"
+                  "Open Sans Semibold"
                 ],
                 "text-size": 12
               }
