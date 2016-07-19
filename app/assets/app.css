@@ -293,19 +293,19 @@ data-md-table-pagination {
 }
 
 
-table
+.table-div table
 {
   width: 500px;
   border-collapse: collapse;
 }
 
-thead
+.table-div thead
 {
   display: block;
   overflow: auto;
 }
 
-tbody
+.table-div tbody
 {
   display: block;
   position: absolute;
