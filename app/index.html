@@ -67,7 +67,7 @@
       md-selected-item-change="vm.selectedItemChange(address)"
       md-items="address in vm.addressSearch(vm.addressText)"
       md-item-text="address.attributes.ADDRESS"
-      md-min-length="0"
+      md-min-length="4"
       placeholder="Enter your address">
       <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
     </md-autocomplete>
@@ -94,7 +94,7 @@
       <md-icon md-svg-icon="{{(vm.showTable) ? 'map' : 'view_list'}}" ></md-icon>
     </md-button> -->
    
-    <div id="map" ng-style="{'height': (vm.showTable) ? '40%' : '100%'}" ng-show="vm.showMap">    
+    <div id="map" ng-style="{'height': (vm.showTable) ? '40%' : '100%'}" ng-hide="vm.showTable && vm.xs">    
       <md-fab-toolbar md-open="demo.isOpen" count="demo.count"
                       md-direction="left">
         <md-fab-trigger class="align-with-text">
@@ -111,7 +111,7 @@
         </md-toolbar>
       </md-fab-toolbar> 
     </div>
-    <div class="table-div" ng-show="vm.showTable" ng-style="{'top': vm.tableTop}">
+    <div class="table-div" ng-show="vm.showTable" ng-class="{'phone': vm.xs}">
       <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
         <md-icon md-svg-icon="filter"></md-icon>
       </md-button>      
@@ -119,9 +119,7 @@
         <label>Filter</label>
         <input ng-model="vm.filterValue">
       </md-input-container>     
-      <data-md-table-pagination md-limit="vm.query.limit" md-limit-options="[5, 10, 25, 50]" md-page="vm.query.page" md-total="{{vm.devplans.length}}" md-page-select="true" md-boundary-links="false">
-      </data-md-table-pagination>
-      <md-table-container>
+      <md-table-container ng-class="{'phone': vm.xs}">
         <table data-md-table data-md-row-select="true" multiple="false" data-ng-model="selectedRows" md-progress="vm.promise" >
           <thead md-head md-order="vm.selectedSearch.order">
             <tr md-row>
@@ -151,6 +149,8 @@
           </tbody>
         </table>
       </md-table-container>
+      <data-md-table-pagination md-limit="vm.query.limit" md-limit-options="[5, 10, 25, 50]" md-page="vm.query.page" md-total="{{vm.devplans.length}}" md-page-select="true" md-boundary-links="false">
+      </data-md-table-pagination>      
     </div>
   </md-content>
 </div>

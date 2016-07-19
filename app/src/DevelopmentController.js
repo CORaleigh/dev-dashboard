@@ -5,10 +5,23 @@
     'sodaService', '$mdSidenav', '$mdBottomSheet', '$timeout', '$log', '$http',
     '$scope', '$mdDialog', '$mdMedia', '$mdToast', DevelopmentController
   ]);
-  function DevelopmentController( sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope, $mdDialog, $mdMedia, $mdToast) {
+  function DevelopmentController( sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope, $mdDialog, $mdMedia, $mdToast, $window) {
+
     $scope.filter = {show: false}
     var map = null,mapClickPt = null,clicked = null,lat = 0, lng = 0;;
     var self = this;
+    $scope.$watch(function() { return $mdMedia('xs'); }, function(xs) {
+      self.xs = xs;
+      console.log(self.xs);
+      if ($window.innerHeight < 500) {
+        self.xs = true;
+      }
+      if (map) {
+        $timeout(function () {
+          map.resize();
+        }, 500);
+      }
+    });    
     $scope.selectedRows = [];
     self.toggleList = toggleSearch;
     self.query  = {
@@ -16,6 +29,7 @@
       limit: 10,
       page: 1
     };
+
     self.fromDate = new Date();
     self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 365);
     self.fromDate = new Date(self.fromDate);
@@ -29,9 +43,10 @@
     }
     self.toggleTable = function () {
       self.showTable = !self.showTable;
-      if (window.innerWidth < 500) {
+      if (window.innerWidth < 500 || window.innerHeight < 500) {
         self.showMap = !self.showMap;
         self.tableTop = "0";
+        self.xs = true;
       }
       $timeout(function () {
         map.resize();
@@ -392,7 +407,7 @@
           var mapClicked = function (e) {
             var popup = new mapboxgl.Popup({
               closeButton: true,
-              closeOnClick: false
+              closeOnClick: true
             });               
             var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
             if (!features.length) {
