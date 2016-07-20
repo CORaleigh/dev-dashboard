@@ -36,6 +36,9 @@
     self.toDate = new Date();
     self.cluster = true;
     self.showTable = false;
+    $timeout(function () {
+      self.showTable = window.innerWidth >= 500 ? true : false;
+    });
     self.showMap = true;
     self.tableTop = "40%";
     self.toggleFilter = function () {
@@ -234,6 +237,14 @@
           ],
           zoom: 17
         });
+        if (self.xs) {
+          self.showMap = true;
+          self.showTable = false;
+          $timeout(function () {
+            map.resize();
+          });
+        }
+
       }
       self.search = function () {
         self.promise =  $timeout(function () {
@@ -376,6 +387,7 @@
 
             map.on('mousemove', mapMouseMove);
             map.on('click', mapClicked);
+            self.search();
           }
           var geoLocated = function (e) {
             map.setPitch(60);

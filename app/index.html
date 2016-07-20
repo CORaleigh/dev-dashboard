@@ -27,17 +27,24 @@
   </style>
 </head>
 <body ng-app="starterApp" layout="column" ng-controller="DevelopmentController as vm" ng-cloak>
-  <md-toolbar layout="row">
-    <md-button class="menu" hide-gt-sm ng-click="vm.toggleList()" aria-label="Show User List">
-      <md-icon md-svg-icon="search" ></md-icon>
-    </md-button>
-    <h1>DevelopmentDashboard</h1>
+  <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
+    <div class="md-toolbar-tools">
+      <md-button class="menu" hide-gt-sm ng-click="vm.toggleList()" aria-label="Show User List">
+        <md-icon md-svg-icon="search" ></md-icon>
+      </md-button>
+      <h2>DevelopmentDashboard</h2>
+      <md-button class="map-toggle" hide-gt-xs ng-click="vm.toggleTable()" aria-label="Show Table">
+        <md-icon md-svg-icon="{{(vm.showTable) ? 'map' : 'view_list'}}"></md-icon>
+      </md-button>
+    </div>
   </md-toolbar>
   <div flex layout="row">
     <md-sidenav  md-is-locked-open="$mdMedia('gt-sm')" md-component-id="left" class="md-whiteframe-z2" >
-    <md-toolbar layout="row">
-      <h1>Search</h1>
-    </md-toolbar>
+    <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
+      <div class="md-toolbar-tools">
+        <h2>Search</h2>
+      </div>
+    </md-toolbar>    
     <div class="content">
       <h3>Search for</h3>
       <md-input-container>
@@ -76,25 +83,6 @@
     </div>
   </md-sidenav>
   <md-content flex id="content">
-<!--     <md-button class="md-fab heat-button" ng-show="vm.showMap" ng-click="vm.toggleDataDisplay()" ng-class="{'with-map': vm.showMap && !vm.showTable, 'with-table': vm.showTable}">
-      <md-tooltip md-direction="left">
-        {{vm.cluster ? 'Show Heat Map' : 'Show Cluster'}}
-      </md-tooltip>
-      <md-icon md-svg-icon="{{vm.cluster ? 'hot' : 'place'}}" ></md-icon>
-    </md-button>
-    <md-button class="md-fab key-button" ng-show="vm.showMap" ng-click="vm.showKey($event)"  ng-class="{'with-map': vm.showMap && !vm.showTable, 'with-table': vm.showTable}">
-      <md-tooltip md-direction="left">
-        Marker Key
-      </md-tooltip>
-      <md-icon md-svg-icon="key" ></md-icon>
-    </md-button>
-    <md-button class="md-fab table-button" ng-click="vm.toggleTable()"  ng-class="{'with-map': vm.showMap && !vm.showTable, 'with-table': vm.showTable}">
-      <md-tooltip md-direction="left">
-        {{(vm.showTable) ? 'Show Map' : 'Show Table'}}
-      </md-tooltip>
-      <md-icon md-svg-icon="{{(vm.showTable) ? 'map' : 'view_list'}}" ></md-icon>
-    </md-button> -->
-   
     <div id="map" ng-style="{'height': (vm.showTable) ? '40%' : '100%'}" ng-hide="vm.showTable && vm.xs">    
       <md-fab-toolbar md-open="demo.isOpen" count="demo.count"
                       md-direction="left">
@@ -107,19 +95,19 @@
           <md-fab-actions class="md-toolbar-tools">
             <md-button ng-click="vm.toggleDataDisplay()">{{vm.cluster ? 'Heat Map' : 'Cluster'}}</md-button>
             <md-button ng-click="vm.showKey($event)">KEY</md-button>
-            <md-button ng-click="vm.toggleTable()">{{(vm.showTable) ? 'Hide Table' : 'Show Table'}}</md-button>
+            <md-button hide-xs ng-click="vm.toggleTable()">{{(vm.showTable) ? 'Hide Table' : 'Show Table'}}</md-button>
           </md-fab-actions>
         </md-toolbar>
       </md-fab-toolbar> 
     </div>
     <div class="table-div" ng-show="vm.showTable" ng-class="{'phone': vm.xs}">
-      <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
+<!--       <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
         <md-icon md-svg-icon="filter"></md-icon>
       </md-button>      
       <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
         <label>Filter</label>
         <input ng-model="vm.filterValue">
-      </md-input-container>     
+      </md-input-container>    -->  
       <md-table-container ng-class="{'phone': vm.xs}">
         <table data-md-table data-md-row-select="true" multiple="false" data-ng-model="selectedRows" md-progress="vm.promise" >
           <thead md-head md-order="vm.selectedSearch.order">

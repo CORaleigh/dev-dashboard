@@ -9,9 +9,9 @@ html, body {
 /* Toolbar area */
 .md-fab-toolbar {
   position: absolute;
-  bottom: 2em;
-  left: 2em;
-  right: 2em;
+  bottom: 20px;
+  left: 0;
+  right: 0;
 }
 .menu {
   background-color: transparent;
@@ -151,9 +151,14 @@ md-button.menuBtn > md-icon {
 
 /* Typography support coming in 0.8.0 */
 
-md-toolbar h1 {
-  font-size: 1.250em;
+
+md-toolbar.phone h2 {
+  font-size: 0.9em;
+  line-height: 3em;
   font-weight: 400;
+}
+md-toolbar.phone .md-button {
+  min-width: 0;
 }
 
 .avatar {
@@ -312,5 +317,12 @@ data-md-table-pagination {
   top: 57px;
   bottom:0;
   overflow: auto;
+}
+
+.map-toggle {
+  position: absolute;
+  right: 16px;
+  top: 0;
+  left: auto;
 }
 
