@@ -13,7 +13,7 @@
     $scope.$watch(function() { return $mdMedia('xs'); }, function(xs) {
       self.xs = xs;
       console.log(self.xs);
-      if ($window.innerHeight < 500) {
+      if (window.innerHeight < 500) {
         self.xs = true;
       }
       if (map) {
