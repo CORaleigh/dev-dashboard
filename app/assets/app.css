@@ -211,6 +211,19 @@ md-table-container {
     right: 0;
     top: 0;
 }
+
+/* only cells with the fixed-width class will have a max width */
+.md-column {
+min-width: 70px;
+max-width: 70px;
+}
+
+.md-cell {
+min-width: 70px;
+max-width: 70px;
+word-break: break-word;
+}
+
 md-table-container.phone {
     bottom: 113px;
 }
