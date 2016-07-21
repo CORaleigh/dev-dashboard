@@ -313,7 +313,7 @@ data-md-table-pagination {
 
 .table-div table
 {
-  width: 500px;
+  width: auto;
   border-collapse: collapse;
 }
 
@@ -329,7 +329,8 @@ data-md-table-pagination {
   position: absolute;
   top: 57px;
   bottom:0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
 }
 
 .map-toggle {
