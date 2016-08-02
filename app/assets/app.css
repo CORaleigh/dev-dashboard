@@ -214,13 +214,13 @@ md-table-container {
 
 /* only cells with the fixed-width class will have a max width */
 .md-column {
-min-width: 70px;
-max-width: 70px;
+min-width: 90px;
+max-width: 90px;
 }
 
 .md-cell {
-min-width: 70px;
-max-width: 70px;
+min-width: 90px;
+max-width: 90px;
 word-break: break-word;
 }
 
@@ -304,6 +304,8 @@ data-md-table-pagination {
 
   top: 5px;
   display: inline-flex !important;
+  z-index: 1;
+  background: white;
 }
 
 #filterButton svg{
@@ -340,3 +342,19 @@ data-md-table-pagination {
   left: auto;
 }
 
+#filterInput {
+    font-size: 20px;
+    box-sizing: border-box;
+    border: none;
+    box-shadow: none;
+    outline: none;
+    background: white;
+    width: 95%;
+    padding: 0 15px;
+    line-height: 40px;
+    height: 40px;
+    position: absolute;
+    top: 10px;
+    left: 50px;
+    z-index: 1;
+}

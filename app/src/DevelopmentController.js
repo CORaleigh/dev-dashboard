@@ -43,6 +43,10 @@
     self.tableTop = "40%";
     self.toggleFilter = function () {
       self.showFilter = !self.showFilter;
+      $timeout(function () {
+        document.getElementById("filterInput").focus();
+        document.getElementById("filterInput").select();
+      });
     }
     self.toggleTable = function () {
       self.showTable = !self.showTable;
@@ -77,6 +81,7 @@
       [{name: 'Development Plans',
       id:'ym9a-r7eh',
       dateField: 'submitted',
+      statusField: 'status',
       addressField: 'geocoded_planaddr',
       longitudeField: 'longitude_planaddr',
       latitudeField: 'latitude_planaddr',
@@ -104,6 +109,11 @@
           order: 'submitted'
         },
         {
+          display: 'Approved',
+          name: 'approved',
+          order: 'approved'
+        },        
+        {
           display: 'Status',
           name: 'status',
           order: 'status'
@@ -122,14 +132,21 @@
           display: 'Document',
           name: 'planurl'
         }
+      ], statuses: [
+        'All',
+        'Active',
+        'Pending',
+        'Review In Progress',
+        'Withdrawn'
       ]},
       {name: 'Permits',
-      id: '5q5u-xiqj',
-      dateField: 'issueddate',
+      id: 'xce4-kemu',
+      dateField: 'applieddate',
+      statusField: 'statuscurrentmapped',
       addressField: 'geocoded_permaddr',
       longitudeField: 'longitude_perm',
       latitudeField: 'latitude_perm',
-      order: '-issueddate',
+      order: '-applieddate',
       defaultDistance: {name: '1 mile'},
       columns: [
         {
@@ -149,13 +166,22 @@
         },
         {
           display: 'Address',
-          name: 'originaladdressfull',
-          order: 'originaladdressfull'
+          name: 'originaladdress1',
+          order: 'originaladdress1'
+        }, {
+          display: 'Status',
+          name: 'statuscurrentmapped',
+          order: 'statuscurrentmapped'
+        },
+        {
+          display: 'Applied',
+          name: 'applieddate',
+          order: '-applieddate'
         },
         {
           display: 'Issued',
           name: 'issueddate',
-          order: 'issueddate'
+          order: '-issueddate'
         },
         {
           display: 'Owner',
@@ -177,6 +203,13 @@
           name: 'estprojectcost',
           order: 'estprojectcost'
         }
+      ], statuses: [
+        'All',
+        'Permit Finaled',
+        'Permit Issued',
+        'In Review',
+        'Occupancy',
+        'Permit Cancelled'
       ]}];
       self.distances = [{name: '1/4 mile', value: 402.335}, {name: '1/2 mile', value: 804.67}, {name: '1 mile', value: 1609.34}, {name: '2 miles', value: 3218.68}, {name: 'All', value: 0}];
       self.distanceChanged = function (distance) {
@@ -249,7 +282,7 @@
       self.search = function () {
         self.promise =  $timeout(function () {
         }, 2000);
-        sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
+        sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
           self.devplans = data;
           sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
         });
@@ -263,6 +296,9 @@
           clickOutsideToClose:true,
           fullscreen: useFullScreen
         });
+      }
+      self.linkClicked = function (e) {
+
       }
   
       function KeyController($scope, $mdDialog) {

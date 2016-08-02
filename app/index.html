@@ -49,10 +49,16 @@
       <h3>Search for</h3>
       <md-input-container>
         <label>Search Type</label>
-        <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []">
+        <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.search();">
           <md-option ng-value="search" ng-repeat="(index, search) in vm.searches"  ng-selected="index === 0" >{{search.name}}</md-option>
         </md-select>
       </md-input-container>
+      <md-input-container>
+        <label>Status</label>
+        <md-select ng-model="vm.selectedStatus" ng-change="vm.search()">
+          <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses"  ng-selected="index === 0" >{{status}}</md-option>
+        </md-select>
+      </md-input-container>      
       <h3>Between</h3>
       <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()"></md-datepicker>
       <h3>and</h3>
@@ -101,10 +107,11 @@
       </md-fab-toolbar> 
     </div>
     <div class="table-div" ng-show="vm.showTable" ng-class="{'phone': vm.xs}">
-<!--       <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
+      <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
         <md-icon md-svg-icon="filter"></md-icon>
-      </md-button>      
-      <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
+      </md-button>  
+      <input id="filterInput" ng-show="vm.showFilter" ng-model="vm.filterValue" placeholder="Search">    
+<!--       <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
         <label>Filter</label>
         <input ng-model="vm.filterValue">
       </md-input-container>    -->  
@@ -121,14 +128,17 @@
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_name}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_type}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.submitted | date: 'fullDate'}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.approved | date: 'fullDate'}}</td>              
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.status}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.zoning}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.cac}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'"><md-button class="md-primary" ng-href="{{devplan.planurl.url}}" target="_blank">View</md-button></td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'"><md-button data-num="{{devplan.plan_number}}" class="md-primary" ng-href="{{devplan.planurl.url}}" target="_blank" ng-click="vm.linkClicked($event)">View</md-button></td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.permitnum}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.proposedworkdescription}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.workclass}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.originaladdressfull}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.originaladdress1}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.statuscurrentmapped}}</td> 
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.applieddate | date: 'fullDate'}}</td>                         
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.issueddate | date: 'fullDate'}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.parcelownername}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.contractorcompanyname}}</td>

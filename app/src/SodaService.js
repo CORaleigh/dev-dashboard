@@ -6,10 +6,13 @@
 
   function SodaService($q, $http){
     return {
-      loadData: function (id, dateField, fromDate, toDate, addressField, distance, lng, lat) {
+      loadData: function (id, dateField, statusField, fromDate, toDate, status, addressField, distance, lng, lat) {
         var where = dateField + " >= '"+fromDate+"' and " + dateField + " <= '"+toDate + "'";
         if (distance > 0) {
           where += " and within_circle(" + addressField + "," + lat + "," + lng + "," + distance + ")";
+        }
+        if (status != 'All') {
+          where += " and " + statusField + " = '" + status + "'";
         }
         var promise = $http({
             url: 'https://data.raleighnc.gov/resource/'+id+'.json', 
@@ -28,6 +31,9 @@
             if (data[i].totalsqft) {
               data[i].totalsqft = parseInt(data[i].totalsqft);
             }
+            // if (data[i]['planurl_approved']) {
+            //   data[i].planurl = data[i]['planurl_approved'];
+            // }              
           }
           return response.data;
         });
@@ -100,6 +106,9 @@
               if (data[i][columns[j].name]) {
                 pt.properties[columns[j].name] = data[i][columns[j].name].url;
               }
+              if (data[i]['planurl_approved']) {
+                pt.properties[columns[j].name] = data[i]['planurl_approved'].url;
+              }              
             }
           }
           geojson.features.push(pt);
