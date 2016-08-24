@@ -132,7 +132,7 @@
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.status}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.zoning}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.cac}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'"><md-button data-num="{{devplan.plan_number}}" class="md-primary" ng-href="{{devplan.planurl.url}}" target="_blank" ng-click="vm.linkClicked($event)">View</md-button></td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'"><md-button data-num="{{devplan.plan_number}}" ng-show="devplan.planurl.url" class="md-primary" ng-href="{{devplan.planurl.url}}" target="_blank" ng-click="vm.linkClicked($event)">View</md-button></td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.permitnum}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.proposedworkdescription}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.workclass}}</td>

@@ -441,10 +441,14 @@
             var feature = features[0];
             var html = "";
             for (var i = 0;i < self.selectedSearch.columns.length;i++) {
-              html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> ";
+
               if (self.selectedSearch.columns[i].name === 'planurl') {
-                html += "<a href='"+feature.properties[self.selectedSearch.columns[i].name] + "' target='_blank'>View</a><br/>";
+                if (feature.properties[self.selectedSearch.columns[i].name]) {
+                  html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> ";                  
+                  html += "<a href='"+feature.properties[self.selectedSearch.columns[i].name] + "' target='_blank'>View</a><br/>";
+                }
               } else {
+                html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> ";                
                 html += feature.properties[self.selectedSearch.columns[i].name] +"<br/>"
               }
             }
