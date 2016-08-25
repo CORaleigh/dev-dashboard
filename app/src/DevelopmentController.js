@@ -280,6 +280,10 @@
         }
 
       }
+      self.searchTypeChanged = function () {
+        self.selectedStatus = self.selectedSearch.statuses[0];
+        self.search();
+      }
       self.search = function () {
         self.promise =  $timeout(function () {
         }, 2000);

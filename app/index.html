@@ -48,7 +48,7 @@
       <h3>Search for</h3>
       <md-input-container>
         <label>Search Type</label>
-        <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.search();">
+        <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.searchTypeChanged()">
           <md-option ng-value="search" ng-repeat="(index, search) in vm.searches"  ng-selected="index === 0" >{{search.name}}</md-option>
         </md-select>
       </md-input-container>
