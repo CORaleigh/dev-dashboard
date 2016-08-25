@@ -36,6 +36,7 @@
     self.toDate = new Date();
     self.cluster = true;
     self.showTable = false;
+    self.selectedDistance = {name: 'All', value: 0};
     $timeout(function () {
       self.showTable = window.innerWidth >= 500 ? true : false;
     });

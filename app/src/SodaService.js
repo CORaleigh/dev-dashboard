@@ -40,80 +40,82 @@
         return promise;
       },
       dataToGeoJson: function (data, map, longitudeField, latitudeField, columns, dateField) {
-        var geojson = {
-             "type": "FeatureCollection",
-             "features": []
-         };
-        var pt = {};
-        for (var i =0; i < data.length;i++) {
-          pt = {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-              "type": "Point",
-              "coordinates": [data[i][longitudeField], data[i][latitudeField]]
-            }
-          };
-          if (data[i].plan_type) {
-            switch (data[i].plan_type) {
-              case 'SITE PLAN':
-                pt.properties['marker-symbol'] = 'siteplan';  
-              break;
-              case 'SUBDIVISION':
-                pt.properties['marker-symbol'] = 'subdivision';
-              break;
-              case 'SPECIAL USE':
-                pt.properties['marker-symbol'] = 'specialuse';
-              break;
-              case 'MASTER PLAN':
-                pt.properties['marker-symbol'] = 'masterplan';
-              break;
-              case 'GROUP HOUSING':
-                pt.properties['marker-symbol'] = 'grouphousing'; 
-              break;
-              case 'PLAN APPROVAL':
-                pt.properties['marker-symbol'] = 'planapproval'; 
-              break;
-              case 'MINOR SUBDIVISION':
-                pt.properties['marker-symbol'] = 'minorsubdivision';
-              break;
-              case 'SHOPPING CENTER':
-                pt.properties['marker-symbol'] = 'shoppingcenter';
-              break;
-              case 'INFILL RECOMBINATION':
-                pt.properties['marker-symbol'] = 'infill';
-              break;
-              case 'ADMINISTRATIVE SITE REVIEW':
-                pt.properties['marker-symbol'] = 'sitereview';
-              break;                
-              default:
-                pt.properties['marker-symbol'] = 'permit';
-              break;     
-            }
-          } else {
-            pt.properties['marker-symbol'] = 'permit';
-          }
-          for(var j = 0;j < columns.length;j++) {
-            if (columns[j].name === dateField) {
-              pt.properties[columns[j].name] = moment(data[i][columns[j].name]).format('LL');
-            }
-            else if (columns[j].name != "planurl") {
-              if (!data[i][columns[j].name]) {
-                data[i][columns[j].name] = " ";
+        if (map.getSource('points')) {  
+          var geojson = {
+               "type": "FeatureCollection",
+               "features": []
+           };
+          var pt = {};
+          for (var i =0; i < data.length;i++) {
+            pt = {
+              "type": "Feature",
+              "properties": {},
+              "geometry": {
+                "type": "Point",
+                "coordinates": [data[i][longitudeField], data[i][latitudeField]]
               }
-              pt.properties[columns[j].name] = data[i][columns[j].name];
+            };
+            if (data[i].plan_type) {
+              switch (data[i].plan_type) {
+                case 'SITE PLAN':
+                  pt.properties['marker-symbol'] = 'siteplan';  
+                break;
+                case 'SUBDIVISION':
+                  pt.properties['marker-symbol'] = 'subdivision';
+                break;
+                case 'SPECIAL USE':
+                  pt.properties['marker-symbol'] = 'specialuse';
+                break;
+                case 'MASTER PLAN':
+                  pt.properties['marker-symbol'] = 'masterplan';
+                break;
+                case 'GROUP HOUSING':
+                  pt.properties['marker-symbol'] = 'grouphousing'; 
+                break;
+                case 'PLAN APPROVAL':
+                  pt.properties['marker-symbol'] = 'planapproval'; 
+                break;
+                case 'MINOR SUBDIVISION':
+                  pt.properties['marker-symbol'] = 'minorsubdivision';
+                break;
+                case 'SHOPPING CENTER':
+                  pt.properties['marker-symbol'] = 'shoppingcenter';
+                break;
+                case 'INFILL RECOMBINATION':
+                  pt.properties['marker-symbol'] = 'infill';
+                break;
+                case 'ADMINISTRATIVE SITE REVIEW':
+                  pt.properties['marker-symbol'] = 'sitereview';
+                break;                
+                default:
+                  pt.properties['marker-symbol'] = 'permit';
+                break;     
+              }
             } else {
-              if (data[i][columns[j].name]) {
-                pt.properties[columns[j].name] = data[i][columns[j].name].url;
-              }
-              if (data[i]['planurl_approved']) {
-                pt.properties[columns[j].name] = data[i]['planurl_approved'].url;
-              }              
+              pt.properties['marker-symbol'] = 'permit';
             }
+            for(var j = 0;j < columns.length;j++) {
+              if (columns[j].name === dateField) {
+                pt.properties[columns[j].name] = moment(data[i][columns[j].name]).format('LL');
+              }
+              else if (columns[j].name != "planurl") {
+                if (!data[i][columns[j].name]) {
+                  data[i][columns[j].name] = " ";
+                }
+                pt.properties[columns[j].name] = data[i][columns[j].name];
+              } else {
+                if (data[i][columns[j].name]) {
+                  pt.properties[columns[j].name] = data[i][columns[j].name].url;
+                }
+                if (data[i]['planurl_approved']) {
+                  pt.properties[columns[j].name] = data[i]['planurl_approved'].url;
+                }              
+              }
+            }
+            geojson.features.push(pt);
           }
-          geojson.features.push(pt);
+          map.getSource('points').setData(geojson);
         }
-        map.getSource('points').setData(geojson);
       }
     };
   }
