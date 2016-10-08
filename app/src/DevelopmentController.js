@@ -348,7 +348,38 @@
           map.on('load', mapLoaded);
         }
 
-        var mapLoaded = function () {      
+        self.toggleImagery = function () {
+          self.showImage = !self.showImage;
+          if (!self.showImage) {
+            map.removeLayer('wms-test-layer');
+          } else {
+            map.addLayer({
+                'id': 'wms-test-layer',
+                'type': 'raster',
+                'source': 'wms-test',
+                'paint': {}
+            }, 'buffer');
+          }
+        };
+
+        var mapLoaded = function () {    
+          map.addSource('wms-test', {
+              'type': 'raster',
+              'tiles': [
+                  'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+              ],
+              'tileSize': 256
+          });
+
+          // map.addLayer({
+          //     'id': 'wms-test-layer',
+          //     'type': 'raster',
+          //     'source': 'wms-test',
+          //     'paint': {}
+          // }, 'aeroway-taxiway');
+
+
+
           map.addSource('buffer', {
             'type': 'geojson',
             'data': {

@@ -363,3 +363,15 @@ md-progress-circular {
   top: 50%;
   left: 50%;
 }
+
+.map-button {
+  min-width: 1%;
+  line-height: 30px;
+  min-height: 30px;
+  height: 30px;
+  position: absolute;
+  z-index: 20;
+  top: 4px;
+  left: 40px;
+  width: 100px;
+}
