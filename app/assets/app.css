@@ -358,3 +358,8 @@ data-md-table-pagination {
     left: 50px;
     z-index: 1;
 }
+md-progress-circular {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}

@@ -8,11 +8,20 @@
     return {
       loadData: function (id, dateField, statusField, fromDate, toDate, status, addressField, distance, lng, lat) {
         var where = dateField + " >= '"+fromDate+"' and " + dateField + " <= '"+toDate + "'";
+        var i = 0;
         if (distance > 0) {
           where += " and within_circle(" + addressField + "," + lat + "," + lng + "," + distance + ")";
         }
-        if (status != 'All') {
-          where += " and " + statusField + " = '" + status + "'";
+    
+        if (status.length > 0) {
+          where += " and (";
+          for (i = 0; i < status.length; i += 1) {
+            if (i > 0) {
+              where +=  " or ";
+            } 
+            where += statusField + " = '" + status[i] + "'";             
+          }
+          where += ")";
         }
         var promise = $http({
             url: 'https://data.raleighnc.gov/resource/'+id+'.json', 

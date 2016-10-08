@@ -23,6 +23,7 @@
       }
     });    
     $scope.selectedRows = [];
+    self.searching = false;
     self.toggleList = toggleSearch;
     self.query  = {
       order: '-submitted',
@@ -134,7 +135,6 @@
           name: 'planurl'
         }
       ], statuses: [
-        'All',
         'Active',
         'Pending',
         'Review In Progress',
@@ -205,7 +205,6 @@
           order: 'estprojectcost'
         }
       ], statuses: [
-        'All',
         'Permit Finaled',
         'Permit Issued',
         'In Review',
@@ -281,15 +280,17 @@
 
       }
       self.searchTypeChanged = function () {
-        self.selectedStatus = self.selectedSearch.statuses[0];
+        self.selectedStatus = self.selectedSearch.statuses;
         self.search();
       }
       self.search = function () {
         self.promise =  $timeout(function () {
         }, 2000);
+        self.searching = true;
         sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
           self.devplans = data;
           sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
+          self.searching = false;
         });
       }
       self.showKey = function (e) {
@@ -338,7 +339,7 @@
         map = new mapboxgl.Map({
           container: 'map', // container id
           style: 'vector-tiles.json',
-          pitch: 60,
+          pitch: 0,
           center: [-78.666, 35.777],
           zoom: 10});
           map.addControl(new mapboxgl.Navigation());
@@ -346,7 +347,8 @@
           $timeout(function () {map.resize()});
           map.on('load', mapLoaded);
         }
-        var mapLoaded = function () {
+
+        var mapLoaded = function () {      
           map.addSource('buffer', {
             'type': 'geojson',
             'data': {
@@ -442,8 +444,17 @@
             var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
             map.getCanvas().style.cursor = features.length ? 'pointer' : '';
           }
-          var createPopup = function (features, map, popup) {
-            var feature = features[0];
+          var popupId = 0;
+          var popup = null;
+          var popupFeatures = [];
+          var openNextPopup = function () {
+            popupId += 1;
+            createPopup(popupFeatures[popupId], map, popup);
+          }
+          var createPopup = function (features, map, popup, id) {
+            var feature = features[id];
+            popupFeatures = features;
+            popupId = 0;
             var html = "";
             for (var i = 0;i < self.selectedSearch.columns.length;i++) {
 
@@ -457,16 +468,27 @@
                 html += feature.properties[self.selectedSearch.columns[i].name] +"<br/>"
               }
             }
+            if (features.length > 1) {
+              html += "<a id='next' href='javascript:void(0)' onclick='openNextPopup()'>Next</a>";
+
+            }
             popup.setLngLat(feature.geometry.coordinates)
             .setHTML(html)
-            .addTo(map);            
+            .addTo(map);   
+            var nextTag = document.getElementById("next");
+            nextTag.onclick = function () {
+              popupId += 1;
+              createPopup(popupFeatures, map, popup, popupId);
+            };
           }
           var mapClicked = function (e) {
-            var popup = new mapboxgl.Popup({
+            popup = new mapboxgl.Popup({
               closeButton: true,
               closeOnClick: true
-            });               
-            var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
+            });
+                 
+            var features = map.queryRenderedFeatures([[e.point.x-20,e.point.y-20],[e.point.x+20,e.point.y+20]], { layers: ['points'] });
+            console.log(features.length);
             if (!features.length) {
               popup.remove();
               if (self.selectedDistance.value > 0) {
@@ -478,7 +500,7 @@
               }
               return;
             }
-            createPopup(features, map, popup);
+            createPopup(features, map, popup, 0);
           }
         }
       })();

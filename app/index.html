@@ -48,24 +48,24 @@
       <h3>Search for</h3>
       <md-input-container>
         <label>Search Type</label>
-        <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.searchTypeChanged()">
+        <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.searchTypeChanged()" ng-disabled="vm.searching">
           <md-option ng-value="search" ng-repeat="(index, search) in vm.searches"  ng-selected="index === 0" >{{search.name}}</md-option>
         </md-select>
       </md-input-container>
       <md-input-container>
         <label>Status</label>
-        <md-select ng-model="vm.selectedStatus" ng-change="vm.search()">
-          <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses"  ng-selected="index === 0" >{{status}}</md-option>
+        <md-select ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
+          <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status}}</md-option>
         </md-select>
       </md-input-container>      
       <h3>Between</h3>
-      <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()"></md-datepicker>
+      <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
       <h3>and</h3>
-      <md-datepicker ng-model="vm.toDate" md-placeholder="Enter date" ng-change="vm.search()"></md-datepicker>
+      <md-datepicker ng-model="vm.toDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
       <h3>Within</h3>
       <md-input-container>
         <label>Search Type</label>
-        <md-select ng-model="vm.selectedDistance" ng-change="vm.distanceChanged(vm.selectedDistance.value)">
+        <md-select ng-model="vm.selectedDistance" ng-change="vm.distanceChanged(vm.selectedDistance.value)" ng-disabled="vm.searching">
           <md-option ng-value="distance" ng-repeat="(index, distance) in vm.distances" ng-selected="vm.selectedSearch.defaultDistance">{{distance.name}}</md-option>
         </md-select>
       </md-input-container>
@@ -81,13 +81,14 @@
       md-item-text="address.attributes.ADDRESS"
       md-min-length="4"
       md-autoselect="true"
-      placeholder="Enter your address">
+      placeholder="Enter your address" ng-disabled="vm.searching">
       <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
     </md-autocomplete>
-    <md-button class="md-raised md-primary" ng-click="vm.search()">Search</md-button>
+    <md-button class="md-raised md-primary" ng-click="vm.search()" ng-disabled="vm.searching">Search</md-button>
     </div>
   </md-sidenav>
   <md-content flex id="content">
+    <md-button class="md-raised" style="position: absolute;left: 20px;top: 5px;z-index: 20">Satellite</md-button>
     <div id="map" ng-style="{'height': (vm.showTable) ? '40%' : '100%'}" ng-hide="vm.showTable && vm.xs">    
       <md-fab-toolbar md-open="demo.isOpen" count="demo.count"
                       md-direction="left">
@@ -151,6 +152,7 @@
       </data-md-table-pagination>      
     </div>
   </md-content>
+  <md-progress-circular ng-show="vm.searching" md-diameter="150"></md-progress-circular>
 </div>
 <script src="../node_modules/angular/angular.js"></script>
 <script src="../node_modules/angular-animate/angular-animate.js"></script>
