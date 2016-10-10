@@ -284,14 +284,16 @@
         self.search();
       }
       self.search = function () {
-        self.promise =  $timeout(function () {
-        }, 2000);
-        self.searching = true;
-        sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
-          self.devplans = data;
-          sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
-          self.searching = false;
-        });
+        if (map) {
+          self.promise =  $timeout(function () {
+          }, 2000);
+          self.searching = true;
+          sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
+            self.devplans = data;
+            sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
+            self.searching = false;
+          });
+        }
       }
       self.showKey = function (e) {
         var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
