@@ -360,7 +360,7 @@
                 'type': 'raster',
                 'source': 'wms-test',
                 'paint': {}
-            }, 'road_major_label');
+            }, 'poi_label');
           }
         };
 
