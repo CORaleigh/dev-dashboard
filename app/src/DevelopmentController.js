@@ -366,7 +366,7 @@
           map.addSource('wms-test', {
               'type': 'raster',
               'tiles': [
-                  'http://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                  'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
               ],
               'tileSize': 256
           });
