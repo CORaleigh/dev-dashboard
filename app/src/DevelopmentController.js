@@ -571,6 +571,9 @@
                     }
                 } else {
                     html += "<strong>" + self.selectedSearch.columns[i].display + "</strong> ";
+                    if (self.selectedSearch.columns[i].display === 'Cost') {
+                        html += '$';
+                    }
                     html += feature.properties[self.selectedSearch.columns[i].name] + "<br/>";
                 }
             }
