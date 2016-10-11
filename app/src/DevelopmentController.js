@@ -75,7 +75,7 @@
             self.cluster = !self.cluster;
             var params = self.cluster ? self.layers : self.heatLayers;
             var layerName = "";
-            var i = 0;
+            var i = 0, layer = null;
             for (i = 0; i < params.length; i += 1) {
                 layerName = 'cluster-' + i.toString();
                 layer = map.getLayer(layerName);
