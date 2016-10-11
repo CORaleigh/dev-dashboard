@@ -379,7 +379,7 @@
                 container: 'map', // container id
                 style: 'vector-tiles.json',
                 pitch: 0,
-                center: [-78.666, 35.777],
+                center: [-78.666, 35.83],
                 zoom: 10,
                 maxZoom: 18,
                 minZoom: 9
