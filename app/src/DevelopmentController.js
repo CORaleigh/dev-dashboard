@@ -4,11 +4,9 @@
         .module('development')
         .controller('DevelopmentController', [
             'sodaService', '$mdSidenav', '$timeout', '$http',
-            '$scope', '$mdDialog', '$mdMedia', DevelopmentController
+            '$scope', '$mdDialog', '$mdMedia', '$window', DevelopmentController
         ]);
-
-    function DevelopmentController(sodaService, $mdSidenav, $timeout, $http, $scope, $mdDialog, $mdMedia) {
-
+    function DevelopmentController(sodaService, $mdSidenav, $timeout, $http, $scope, $mdDialog, $mdMedia, $window) {
         $scope.filter = {
             show: false
         };
@@ -23,7 +21,7 @@
         }, function (xs) {
             self.xs = xs;
             console.log(self.xs);
-            if (window.innerHeight < 500) {
+            if ($window.innerHeight < 500) {
                 self.xs = true;
             }
             if (map) {
@@ -34,13 +32,12 @@
         });
         $scope.selectedRows = [];
         self.searching = false;
-        self.toggleList = toggleSearch;
+        self.toggleList = self.toggleSearch;
         self.query = {
             order: '-submitted',
             limit: 10,
             page: 1
         };
-
         self.fromDate = new Date();
         self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 365);
         self.fromDate = new Date(self.fromDate);
@@ -52,7 +49,7 @@
             value: 0
         };
         $timeout(function () {
-            self.showTable = window.innerWidth >= 500 ? true : false;
+            self.showTable = $window.innerWidth >= 500 ? true : false;
         });
         self.showMap = true;
         self.tableTop = "40%";
@@ -65,7 +62,7 @@
         };
         self.toggleTable = function () {
             self.showTable = !self.showTable;
-            if (window.innerWidth < 500 || window.innerHeight < 500) {
+            if ($window.innerWidth < 500 || $window.innerHeight < 500) {
                 self.showMap = !self.showMap;
                 self.tableTop = "0";
                 self.xs = true;
@@ -227,7 +224,7 @@
         }];
         self.distanceChanged = function (distance) {
             if (distance > 0 && (self.selectedAddress || mapClickPt)) {
-                bufferAddress((clicked) ? mapClickPt : self.selectedAddress);
+                self.bufferAddress((clicked) ? mapClickPt : self.selectedAddress);
             }
         };
         self.addressSearch = function (addressText) {
@@ -236,12 +233,11 @@
                     return result.data.features;
                 });
         };
-
         self.selectedItemChange = function (address) {
             clicked = false;
-            bufferAddress(address);
+            self.bufferAddress(address);
         };
-        var bufferAddress = function (address) {
+        self.bufferAddress = function (address) {
             if (address) {
                 map.flyTo({
                     center: [
@@ -265,7 +261,7 @@
                     var result = turf.featurecollection([buffered, pt]);
                     //map.getSource('buffer').setData(result.features[0].features[0]);
                     
-                    map.getSource('buffer').setData(createGeoJSONCircle([lng, lat], self.selectedDistance.value).data);
+                    map.getSource('buffer').setData(self.createGeoJSONCircle([lng, lat], self.selectedDistance.value).data);
                     var bbox = turf.extent(result.features[0].features[0]);
                     map.fitBounds([
                         [
@@ -295,7 +291,6 @@
                     map.resize();
                 });
             }
-
         };
         self.searchTypeChanged = function () {
             self.selectedStatus = self.selectedSearch.statuses;
@@ -314,7 +309,7 @@
                 });
             }
         };
-        self.showKey = function (e) {
+        self.showKey = function () {
             var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
             $mdDialog.show({
                 controller: KeyController,
@@ -327,7 +322,6 @@
         self.linkClicked = function (e) {
             console.log(e);
         };
-
         function KeyController($scope, $mdDialog) {
             $scope.tiles = [{
                 title: 'ADMINISTRATIVE SITE REVIEW',
@@ -371,34 +365,34 @@
             };
         }
         $timeout(function () {
-            createMap();
+            self.createMap();
         }, 200);
         // *********************************
         // Internal methods
         // *********************************
-        function toggleSearch() {
+        self.toggleSearch = function () {
             $mdSidenav('left').toggle();
-        }
-        var createMap = function () {
-
+        };
+        self.createMap = function () {
             mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';
             map = new mapboxgl.Map({
                 container: 'map', // container id
                 style: 'vector-tiles.json',
                 pitch: 0,
                 center: [-78.666, 35.777],
-                zoom: 10
+                zoom: 10,
+                maxZoom: 18,
+                minZoom: 9
             });
             map.addControl(new mapboxgl.Navigation());
             map.addControl(new mapboxgl.Geolocate({
                 position: 'top-left'
-            }).on('geolocate', geoLocated));
+            }).on('geolocate', self.geoLocated));
             $timeout(function () {
                 map.resize();
             });
-            map.on('load', mapLoaded);
+            map.on('load', self.mapLoaded);
         };
-
         self.toggleImagery = function () {
             self.showImage = !self.showImage;
             if (!self.showImage) {
@@ -412,8 +406,7 @@
                 }, 'poi_label');
             }
         };
-
-        var mapLoaded = function () {
+        self.mapLoaded = function () {
             map.addSource('wms-test', {
                 type: 'raster',
                 tiles: [
@@ -421,16 +414,12 @@
                 ],
                 tileSize: 256
             });
-
             // map.addLayer({
             //     'id': 'wms-test-layer',
             //     'type': 'raster',
             //     'source': 'wms-test',
             //     'paint': {}
             // }, 'aeroway-taxiway');
-
-
-
             map.addSource('buffer', {
                 type: 'geojson',
                 data: {
@@ -469,8 +458,8 @@
                 interactive: true
             });
             // Cluster categories
-            var highCount = 75,
-                lowCount = 15;
+            // var highCount = 75,
+            //     lowCount = 15;
             self.layers = [
                 [150, '#f28cb1'],
                 [20, '#f1f075'],
@@ -507,63 +496,59 @@
                     "text-size": 12
                 }
             });
-
-            map.on('mousemove', mapMouseMove);
-            map.on('click', mapClicked);
+            map.on('mousemove', self.mapMouseMove);
+            map.on('click', self.mapClicked);
             self.search();
         };
-        var createGeoJSONCircle = function(center, radiusInKm, points) {
-            if(!points) points = 64;
-
+        self.createGeoJSONCircle = function (center, radiusInKm, points) {
+            if (!points) {
+                points = 64;
+            }
+            var i = 0;
             var coords = {
                 latitude: center[1],
                 longitude: center[0]
             };
-
-            var km = radiusInKm/1000;
-
+            var km = radiusInKm / 1000;
             var ret = [];
-            var distanceX = km/(111.320*Math.cos(coords.latitude*Math.PI/180));
-            var distanceY = km/110.574;
-
+            var distanceX = km / (111.320 * Math.cos(coords.latitude * Math.PI / 180));
+            var distanceY = km / 110.574;
             var theta, x, y;
-            for(var i=0; i<points; i++) {
-                theta = (i/points)*(2*Math.PI);
-                x = distanceX*Math.cos(theta);
-                y = distanceY*Math.sin(theta);
-
-                ret.push([coords.longitude+x, coords.latitude+y]);
+            for (i = 0; i < points; i += 1) {
+                theta = (i / points) * (2 * Math.PI);
+                x = distanceX * Math.cos(theta);
+                y = distanceY * Math.sin(theta);
+                ret.push([coords.longitude + x, coords.latitude + y]);
             }
             ret.push(ret[0]);
-
             return {
-                "type": "geojson",
-                "data": {
-                    "type": "FeatureCollection",
-                    "features": [{
-                        "type": "Feature",
-                        "geometry": {
-                            "type": "Polygon",
-                            "coordinates": [ret]
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: [{
+                        type: "Feature",
+                        geometry: {
+                            type: "Polygon",
+                            coordinates: [ret]
                         }
                     }]
                 }
             };
-        };        
-        var geoLocated = function (e) {
-            map.setPitch(60);
+        };
+        self.geoLocated = function (e) {
+            //map.setPitch(60);
             if (self.selectedDistance.value > 0) {
                 clicked = true;
                 mapClickPt = {
                     geometry: {
-                        x: data.coords.longitude,
-                        y: data.coords.latitude
+                        x: e.coords.longitude,
+                        y: e.coords.latitude
                     }
                 };
-                bufferAddress(mapClickPt);
+                self.bufferAddress(mapClickPt);
             }
         };
-        var mapMouseMove = function (e) {
+        self.mapMouseMove = function (e) {
             var features = map.queryRenderedFeatures(e.point, {
                 layers: ['points']
             });
@@ -572,18 +557,13 @@
         var popupId = 0;
         var popup = null;
         var popupFeatures = [];
-        var openNextPopup = function () {
-            popupId += 1;
-            createPopup(popupFeatures[popupId], map, popup);
-        };
-        var createPopup = function (features, map, popup, id) {
+        self.createPopup = function (features, map, popup, id) {
             var feature = features[id];
             popupFeatures = features;
-            popupId = 0;
+            //popupId = 0;
             var html = "";
             var i = 0;
             for (i = 0; i < self.selectedSearch.columns.length; i += 1) {
-
                 if (self.selectedSearch.columns[i].name === 'planurl') {
                     if (feature.properties[self.selectedSearch.columns[i].name]) {
                         html += "<strong>" + self.selectedSearch.columns[i].display + "</strong> ";
@@ -595,35 +575,89 @@
                 }
             }
             if (features.length > 1) {
-                html += "<a id='next' href='javascript:void(0)' onclick='openNextPopup()'>Next</a>";
-
+                html += "<a id='prev' href='javascript:void(0)'>Previous</a><span>           </span>";
+                html += "<a id='next' href='javascript:void(0)'>Next</a>";
             }
             popup.setLngLat(feature.geometry.coordinates)
                 .setHTML(html)
                 .addTo(map);
-
             var nextTag = document.getElementById("next");
             if (nextTag) {
                 nextTag.onclick = function () {
-                    popupId += 1;
-                    createPopup(popupFeatures, map, popup, popupId);
+                    if (popupId === popupFeatures.length - 1) {
+                        popupId = 0;
+                    } else {
+                        popupId += 1;
+                    }
+                    self.createPopup(popupFeatures, map, popup, popupId);
                 };
             }
-
-        }
-        var mapClicked = function (e) {
+            var prevTag = document.getElementById("prev");
+            if (prevTag) {
+                prevTag.onclick = function () {
+                    if (popupId === 0) {
+                        popupId = popupFeatures.length - 1;
+                    } else {
+                        popupId -= 1;
+                    }
+                    self.createPopup(popupFeatures, map, popup, popupId);
+                };
+            }
+        };
+        var setBufferDistance = function (zoom) {
+            if (zoom >= 9 && zoom < 10) {
+                return 800;
+            }
+            if (zoom >= 10 && zoom < 11) {
+                return 500;
+            }
+            if (zoom >= 11 && zoom < 12) {
+                return 300;
+            }
+            if (zoom >= 12 && zoom < 13) {
+                return 160;
+            }
+            if (zoom >= 13 && zoom < 14) {
+                return 130;
+            }
+            if (zoom >= 14 && zoom < 15) {
+                return 100;
+            }
+            if (zoom >= 15 && zoom < 16) {
+                return 70;
+            }
+            if (zoom >= 16 && zoom < 17) {
+                return 40;
+            }
+            if (zoom >= 17) {
+                return 10;
+            }
+        };
+        self.mapClicked = function (e) {
             popup = new mapboxgl.Popup({
                 closeButton: true,
                 closeOnClick: true
             });
-
-            var features = map.queryRenderedFeatures([
-                [e.point.x - 20, e.point.y - 20],
-                [e.point.x + 20, e.point.y + 20]
-            ], {
-                layers: ['points']
-            });
-            console.log(features.length);
+            var pt = {
+                type: "Feature",
+                properties: {},
+                geometry: {
+                    type: "Point",
+                    coordinates: [e.lngLat.lng, e.lngLat.lat]
+                }
+            };
+            setBufferDistance(map.getZoom());
+            var distance = setBufferDistance(map.getZoom());
+            console.log(distance);
+            var buffered = turf.buffer(pt, distance, 'meters');
+            var envelope = turf.envelope(buffered);
+            //map.getSource('buffer').setData(envelope);
+            var i = 0, features = [];
+            for (i = 0; i < map.getSource('points')._data.features.length; i += 1) {
+                if (turf.inside(map.getSource('points')._data.features[i], envelope)) {
+                    features.push(map.getSource('points')._data.features[i]);
+                }
+            }
             if (!features.length) {
                 popup.remove();
                 if (self.selectedDistance.value > 0) {
@@ -639,7 +673,7 @@
                             y: e.lngLat.lat
                         }
                     };
-                    bufferAddress({
+                    self.bufferAddress({
                         geometry: {
                             x: e.lngLat.lng,
                             y: e.lngLat.lat
@@ -648,7 +682,7 @@
                 }
                 return;
             }
-            createPopup(features, map, popup, 0);
+            self.createPopup(features, map, popup, 0);
         };
     }
 })();
