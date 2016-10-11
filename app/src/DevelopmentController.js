@@ -1,539 +1,654 @@
-(function(){
-  angular
-  .module('development')
-  .controller('DevelopmentController', [
-    'sodaService', '$mdSidenav', '$mdBottomSheet', '$timeout', '$log', '$http',
-    '$scope', '$mdDialog', '$mdMedia', '$mdToast', DevelopmentController
-  ]);
-  function DevelopmentController( sodaService, $mdSidenav, $mdBottomSheet, $timeout, $log, $http , $scope, $mdDialog, $mdMedia, $mdToast, $window) {
+(function () {
+    'use strict';
+    angular
+        .module('development')
+        .controller('DevelopmentController', [
+            'sodaService', '$mdSidenav', '$timeout', '$http',
+            '$scope', '$mdDialog', '$mdMedia', DevelopmentController
+        ]);
 
-    $scope.filter = {show: false}
-    var map = null,mapClickPt = null,clicked = null,lat = 0, lng = 0;;
-    var self = this;
-    $scope.$watch(function() { return $mdMedia('xs'); }, function(xs) {
-      self.xs = xs;
-      console.log(self.xs);
-      if (window.innerHeight < 500) {
-        self.xs = true;
-      }
-      if (map) {
+    function DevelopmentController(sodaService, $mdSidenav, $timeout, $http, $scope, $mdDialog, $mdMedia) {
+
+        $scope.filter = {
+            show: false
+        };
+        var map = null,
+            mapClickPt = null,
+            clicked = null,
+            lat = 0,
+            lng = 0;
+        var self = this;
+        $scope.$watch(function () {
+            return $mdMedia('xs');
+        }, function (xs) {
+            self.xs = xs;
+            console.log(self.xs);
+            if (window.innerHeight < 500) {
+                self.xs = true;
+            }
+            if (map) {
+                $timeout(function () {
+                    map.resize();
+                }, 500);
+            }
+        });
+        $scope.selectedRows = [];
+        self.searching = false;
+        self.toggleList = toggleSearch;
+        self.query = {
+            order: '-submitted',
+            limit: 10,
+            page: 1
+        };
+
+        self.fromDate = new Date();
+        self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 365);
+        self.fromDate = new Date(self.fromDate);
+        self.toDate = new Date();
+        self.cluster = true;
+        self.showTable = false;
+        self.selectedDistance = {
+            name: 'All',
+            value: 0
+        };
         $timeout(function () {
-          map.resize();
-        }, 500);
-      }
-    });    
-    $scope.selectedRows = [];
-    self.searching = false;
-    self.toggleList = toggleSearch;
-    self.query  = {
-      order: '-submitted',
-      limit: 10,
-      page: 1
-    };
-
-    self.fromDate = new Date();
-    self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 365);
-    self.fromDate = new Date(self.fromDate);
-    self.toDate = new Date();
-    self.cluster = true;
-    self.showTable = false;
-    self.selectedDistance = {name: 'All', value: 0};
-    $timeout(function () {
-      self.showTable = window.innerWidth >= 500 ? true : false;
-    });
-    self.showMap = true;
-    self.tableTop = "40%";
-    self.toggleFilter = function () {
-      self.showFilter = !self.showFilter;
-      $timeout(function () {
-        document.getElementById("filterInput").focus();
-        document.getElementById("filterInput").select();
-      });
-    }
-    self.toggleTable = function () {
-      self.showTable = !self.showTable;
-      if (window.innerWidth < 500 || window.innerHeight < 500) {
-        self.showMap = !self.showMap;
-        self.tableTop = "0";
-        self.xs = true;
-      }
-      $timeout(function () {
-        map.resize();
-      });
-    };
-    self.toggleDataDisplay = function () {
-      self.cluster = !self.cluster;
-      var params = self.cluster ? self.layers : self.heatLayers;
-      var layer = null;
-      var layerName = "";
-      for (var i = 0; i < params.length; i++) {
-        layerName =  'cluster-' + i.toString();
-        layer = map.getLayer(layerName);
-        map.setPaintProperty(layerName, 'circle-color', params[i][1]);
-        map.setPaintProperty(layerName, 'circle-radius', self.cluster ? 18 : 70);
-        map.setPaintProperty(layerName, 'circle-blur', self.cluster ? 0 : 1);
-        map.setFilter(layerName, i == 0 ?
-          [">=", "point_count", params[i][0]] :
-          ["all",
-          [">=", "point_count", params[i][0]],
-          ["<", "point_count", params[i - 1][0]]]);
-        }
-      };
-      self.searches =
-      [{name: 'Development Plans',
-      id:'ym9a-r7eh',
-      dateField: 'submitted',
-      statusField: 'status',
-      addressField: 'geocoded_planaddr',
-      longitudeField: 'longitude_planaddr',
-      latitudeField: 'latitude_planaddr',
-      order: '-submitted',
-      defaultDistance: {name: 'All'},
-      columns: [
-        {
-          display: 'Plan #',
-          name: 'plan_number',
-          order:'plan_number'
-        },
-        {
-          display: 'Plan Name',
-          name: 'plan_name',
-          order: 'plan_name'
-        },
-        {
-          display: 'Plan Type',
-          name: 'plan_type',
-          order: 'plan_type'
-        },
-        {
-          display: 'Submitted',
-          name: 'submitted',
-          order: 'submitted'
-        },
-        {
-          display: 'Approved',
-          name: 'approved',
-          order: 'approved'
-        },        
-        {
-          display: 'Status',
-          name: 'status',
-          order: 'status'
-        },
-        {
-          display: 'Zoning',
-          name: 'zoning',
-          order: 'zoning'
-        },
-        {
-          display: 'CAC',
-          name: 'cac',
-          order: 'cac'
-        },
-        {
-          display: 'Document',
-          name: 'planurl'
-        }
-      ], statuses: [
-        'Active',
-        'Pending',
-        'Review In Progress',
-        'Withdrawn'
-      ]},
-      {name: 'Permits',
-      id: 'xce4-kemu',
-      dateField: 'applieddate',
-      statusField: 'statuscurrentmapped',
-      addressField: 'geocoded_permaddr',
-      longitudeField: 'longitude_perm',
-      latitudeField: 'latitude_perm',
-      order: '-applieddate',
-      defaultDistance: {name: '1 mile'},
-      columns: [
-        {
-          display: 'Permit #',
-          name: 'permitnum',
-          order: 'permitnum'
-        },
-        {
-          display: 'Proposed Work',
-          name: 'proposedworkdescription',
-          order: 'proposedworkdescription'
-        },
-        {
-          display: 'Authorized Work',
-          name: 'workclass',
-          order: 'workclass'
-        },
-        {
-          display: 'Address',
-          name: 'originaladdress1',
-          order: 'originaladdress1'
+            self.showTable = window.innerWidth >= 500 ? true : false;
+        });
+        self.showMap = true;
+        self.tableTop = "40%";
+        self.toggleFilter = function () {
+            self.showFilter = !self.showFilter;
+            $timeout(function () {
+                document.getElementById("filterInput").focus();
+                document.getElementById("filterInput").select();
+            });
+        };
+        self.toggleTable = function () {
+            self.showTable = !self.showTable;
+            if (window.innerWidth < 500 || window.innerHeight < 500) {
+                self.showMap = !self.showMap;
+                self.tableTop = "0";
+                self.xs = true;
+            }
+            $timeout(function () {
+                map.resize();
+            });
+        };
+        self.toggleDataDisplay = function () {
+            self.cluster = !self.cluster;
+            var params = self.cluster ? self.layers : self.heatLayers;
+            var layerName = "";
+            var i = 0;
+            for (i = 0; i < params.length; i += 1) {
+                layerName = 'cluster-' + i.toString();
+                layer = map.getLayer(layerName);
+                map.setPaintProperty(layerName, 'circle-color', params[i][1]);
+                map.setPaintProperty(layerName, 'circle-radius', self.cluster ? 18 : 70);
+                map.setPaintProperty(layerName, 'circle-blur', self.cluster ? 0 : 1);
+                map.setFilter(layerName, i == 0 ? [">=", "point_count", params[i][0]] : ["all", [">=", "point_count", params[i][0]],
+                    ["<", "point_count", params[i - 1][0]]
+                ]);
+            }
+        };
+        self.searches = [{
+            name: 'Development Plans',
+            id: 'ym9a-r7eh',
+            dateField: 'submitted',
+            statusField: 'status',
+            addressField: 'geocoded_planaddr',
+            longitudeField: 'longitude_planaddr',
+            latitudeField: 'latitude_planaddr',
+            order: '-submitted',
+            defaultDistance: {
+                name: 'All'
+            },
+            columns: [{
+                display: 'Plan #',
+                name: 'plan_number',
+                order: 'plan_number'
+            }, {
+                display: 'Plan Name',
+                name: 'plan_name',
+                order: 'plan_name'
+            }, {
+                display: 'Plan Type',
+                name: 'plan_type',
+                order: 'plan_type'
+            }, {
+                display: 'Submitted',
+                name: 'submitted',
+                order: 'submitted'
+            }, {
+                display: 'Approved',
+                name: 'approved',
+                order: 'approved'
+            }, {
+                display: 'Status',
+                name: 'status',
+                order: 'status'
+            }, {
+                display: 'Zoning',
+                name: 'zoning',
+                order: 'zoning'
+            }, {
+                display: 'CAC',
+                name: 'cac',
+                order: 'cac'
+            }, {
+                display: 'Document',
+                name: 'planurl'
+            }],
+            statuses: [
+                'Active',
+                'Pending',
+                'Review In Progress',
+                'Withdrawn'
+            ]
         }, {
-          display: 'Status',
-          name: 'statuscurrentmapped',
-          order: 'statuscurrentmapped'
-        },
-        {
-          display: 'Applied',
-          name: 'applieddate',
-          order: '-applieddate'
-        },
-        {
-          display: 'Issued',
-          name: 'issueddate',
-          order: '-issueddate'
-        },
-        {
-          display: 'Owner',
-          name: 'parcelownername',
-          order: 'parcelownername'
-        },
-        {
-          display: 'Contractor',
-          name: 'contractorcompanyname',
-          order: 'contractorcompanyname'
-        },
-        {
-          display: 'Sq Footage',
-          name: 'totalsqft',
-          order: 'totalsqft'
-        },
-        {
-          display: 'Cost',
-          name: 'estprojectcost',
-          order: 'estprojectcost'
-        }
-      ], statuses: [
-        'Permit Finaled',
-        'Permit Issued',
-        'In Review',
-        'Occupancy',
-        'Permit Cancelled'
-      ]}];
-      self.distances = [{name: '1/4 mile', value: 402.335}, {name: '1/2 mile', value: 804.67}, {name: '1 mile', value: 1609.34}, {name: '2 miles', value: 3218.68}, {name: 'All', value: 0}];
-      self.distanceChanged = function (distance) {
-        if (distance > 0 && (self.selectedAddress || mapClickPt)) {
-          bufferAddress((clicked) ? mapClickPt : self.selectedAddress);
-        }
-      }
-      self.addressSearch = function(addressText){
-        return $http.get("https://maps.raleighnc.gov/arcgis/rest/services/Addresses/MapServer/0/query?returnGeometry=true&outSR=4326&geometryPrecision=5&f=json&orderByFields=ADDRESS&where=ADDRESSU like '"+addressText.toUpperCase()+"%'")
-        .then(function(result){
-          return result.data.features;
-        })
-      }
+            name: 'Permits',
+            id: 'xce4-kemu',
+            dateField: 'applieddate',
+            statusField: 'statuscurrentmapped',
+            addressField: 'geocoded_permaddr',
+            longitudeField: 'longitude_perm',
+            latitudeField: 'latitude_perm',
+            order: '-applieddate',
+            defaultDistance: {
+                name: '1 mile'
+            },
+            columns: [{
+                display: 'Permit #',
+                name: 'permitnum',
+                order: 'permitnum'
+            }, {
+                display: 'Proposed Work',
+                name: 'proposedworkdescription',
+                order: 'proposedworkdescription'
+            }, {
+                display: 'Authorized Work',
+                name: 'workclass',
+                order: 'workclass'
+            }, {
+                display: 'Address',
+                name: 'originaladdress1',
+                order: 'originaladdress1'
+            }, {
+                display: 'Status',
+                name: 'statuscurrentmapped',
+                order: 'statuscurrentmapped'
+            }, {
+                display: 'Applied',
+                name: 'applieddate',
+                order: '-applieddate'
+            }, {
+                display: 'Issued',
+                name: 'issueddate',
+                order: '-issueddate'
+            }, {
+                display: 'Owner',
+                name: 'parcelownername',
+                order: 'parcelownername'
+            }, {
+                display: 'Contractor',
+                name: 'contractorcompanyname',
+                order: 'contractorcompanyname'
+            }, {
+                display: 'Sq Footage',
+                name: 'totalsqft',
+                order: 'totalsqft'
+            }, {
+                display: 'Cost',
+                name: 'estprojectcost',
+                order: 'estprojectcost'
+            }],
+            statuses: [
+                'Permit Finaled',
+                'Permit Issued',
+                'In Review',
+                'Occupancy',
+                'Permit Cancelled'
+            ]
+        }];
+        self.distances = [{
+            name: '1/4 mile',
+            value: 402.335
+        }, {
+            name: '1/2 mile',
+            value: 804.67
+        }, {
+            name: '1 mile',
+            value: 1609.34
+        }, {
+            name: '2 miles',
+            value: 3218.68
+        }, {
+            name: 'All',
+            value: 0
+        }];
+        self.distanceChanged = function (distance) {
+            if (distance > 0 && (self.selectedAddress || mapClickPt)) {
+                bufferAddress((clicked) ? mapClickPt : self.selectedAddress);
+            }
+        };
+        self.addressSearch = function (addressText) {
+            return $http.get("https://maps.raleighnc.gov/arcgis/rest/services/Addresses/MapServer/0/query?returnGeometry=true&outSR=4326&geometryPrecision=5&f=json&orderByFields=ADDRESS&where=ADDRESSU like '" + addressText.toUpperCase() + "%'")
+                .then(function (result) {
+                    return result.data.features;
+                });
+        };
 
-      self.selectedItemChange = function (address) {
-        clicked = false;
-        bufferAddress(address);
-      }
-      var bufferAddress = function (address) {
-        if (address) {
-          map.flyTo({
-            center: [
-              address.geometry.x, address.geometry.y
-            ],
-            zoom: 13
-          });
-          if (self.selectedDistance.value > 0) {
-            lat = address.geometry.y;
-            lng = address.geometry.x;
-            var pt = {
-              "type": "Feature",
-              "properties": {},
-              "geometry": {
-                "type": "Point",
-                "coordinates": [lng, lat]
-              }
-            };
-            var unit = 'meters';
-            var buffered = turf.buffer(pt, self.selectedDistance.value, unit);
-            var result = turf.featurecollection([buffered, pt]);
-            map.getSource('buffer').setData(result.features[0].features[0]);
-            var bbox = turf.extent(result.features[0].features[0]);
-            map.fitBounds([[
-              bbox[0],
-              bbox[1]
-            ], [
-              bbox[2],
-              bbox[3]
-            ]]);
+        self.selectedItemChange = function (address) {
+            clicked = false;
+            bufferAddress(address);
+        };
+        var bufferAddress = function (address) {
+            if (address) {
+                map.flyTo({
+                    center: [
+                        address.geometry.x, address.geometry.y
+                    ],
+                    zoom: 13
+                });
+                if (self.selectedDistance.value > 0) {
+                    lat = address.geometry.y;
+                    lng = address.geometry.x;
+                    var pt = {
+                        type: "Feature",
+                        properties: {},
+                        geometry: {
+                            type: "Point",
+                            coordinates: [lng, lat]
+                        }
+                    };
+                    var unit = 'meters';
+                    var buffered = turf.buffer(pt, self.selectedDistance.value, unit);
+                    var result = turf.featurecollection([buffered, pt]);
+                    //map.getSource('buffer').setData(result.features[0].features[0]);
+                    
+                    map.getSource('buffer').setData(createGeoJSONCircle([lng, lat], self.selectedDistance.value).data);
+                    var bbox = turf.extent(result.features[0].features[0]);
+                    map.fitBounds([
+                        [
+                            bbox[0],
+                            bbox[1]
+                        ],
+                        [
+                            bbox[2],
+                            bbox[3]
+                        ]
+                    ]);
+                    self.search();
+                }
+            }
+        };
+        self.rowSelected = function () {
+            map.flyTo({
+                center: [
+                    this.model[self.selectedSearch.longitudeField], this.model[self.selectedSearch.latitudeField]
+                ],
+                zoom: 17
+            });
+            if (self.xs) {
+                self.showMap = true;
+                self.showTable = false;
+                $timeout(function () {
+                    map.resize();
+                });
+            }
+
+        };
+        self.searchTypeChanged = function () {
+            self.selectedStatus = self.selectedSearch.statuses;
             self.search();
-          }
-        }
-      }
-      self.rowSelected = function () {
-        map.flyTo({
-          center: [
-            this.model[self.selectedSearch.longitudeField], this.model[self.selectedSearch.latitudeField]
-          ],
-          zoom: 17
-        });
-        if (self.xs) {
-          self.showMap = true;
-          self.showTable = false;
-          $timeout(function () {
-            map.resize();
-          });
-        }
-
-      }
-      self.searchTypeChanged = function () {
-        self.selectedStatus = self.selectedSearch.statuses;
-        self.search();
-      }
-      self.search = function () {
-        if (map) {
-          self.promise =  $timeout(function () {
-          }, 2000);
-          self.searching = true;
-          sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, new moment(self.fromDate).format('YYYY-MM-DD'), new moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
-            self.devplans = data;
-            sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
-            self.searching = false;
-          });
-        }
-      }
-      self.showKey = function (e) {
-        var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
-        $mdDialog.show({
-          controller: KeyController,
-          templateUrl: 'src/key.html',
-          parent: angular.element(document.body),
-          clickOutsideToClose:true,
-          fullscreen: useFullScreen
-        });
-      }
-      self.linkClicked = function (e) {
-
-      }
-  
-      function KeyController($scope, $mdDialog) {
-        $scope.tiles = [
-          {title: 'ADMINISTRATIVE SITE REVIEW', icon: 'sitereview'}, {title: 'INFILL RECOMBINATION', icon: 'infill'}, {title: 'GROUP HOUSING', icon: 'grouphousing'}, {title: 'MASTER PLAN', icon:'masterplan'},
-          {title: 'MINOR SUBDIVISION', icon:'minorsubdivision'}, {title: 'PLAN APPROVAL', icon: 'planapproval'}, {title: 'SHOPPING CENTER', icon: 'shoppingcenter'}, {title: 'SITE PLAN', icon: 'siteplan'},
-          {title: 'SPECIAL USE', icon: 'specialuse'}, {title: 'SUBDIVISION', icon: 'subdivision'}
-        ];
-        $scope.hide = function() {
-          $mdDialog.hide();
         };
-        $scope.cancel = function() {
-          $mdDialog.cancel();
+        self.search = function () {
+            if (map) {
+                self.promise = $timeout(function () {
+                    console.log('loaded');
+                }, 2000);
+                self.searching = true;
+                sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, moment(self.fromDate).format('YYYY-MM-DD'), moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
+                    self.devplans = data;
+                    sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
+                    self.searching = false;
+                });
+            }
         };
-        $scope.answer = function(answer) {
-          $mdDialog.hide(answer);
+        self.showKey = function (e) {
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+            $mdDialog.show({
+                controller: KeyController,
+                templateUrl: 'src/key.html',
+                parent: angular.element(document.body),
+                clickOutsideToClose: true,
+                fullscreen: useFullScreen
+            });
         };
-      }
-      $timeout(function (){
-        createMap();
-      }, 200);
-      // *********************************
-      // Internal methods
-      // *********************************
-      function toggleSearch() {
-        $mdSidenav('left').toggle();
+        self.linkClicked = function (e) {
+            console.log(e);
+        };
 
-      }      
-      var createMap = function () {
-
-        mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';    
-        map = new mapboxgl.Map({
-          container: 'map', // container id
-          style: 'vector-tiles.json',
-          pitch: 0,
-          center: [-78.666, 35.777],
-          zoom: 10});
-          map.addControl(new mapboxgl.Navigation());
-          map.addControl(new mapboxgl.Geolocate({position: 'top-left'}).on('geolocate', geoLocated));
-          $timeout(function () {map.resize()});
-          map.on('load', mapLoaded);
+        function KeyController($scope, $mdDialog) {
+            $scope.tiles = [{
+                title: 'ADMINISTRATIVE SITE REVIEW',
+                icon: 'sitereview'
+            }, {
+                title: 'INFILL RECOMBINATION',
+                icon: 'infill'
+            }, {
+                title: 'GROUP HOUSING',
+                icon: 'grouphousing'
+            }, {
+                title: 'MASTER PLAN',
+                icon: 'masterplan'
+            }, {
+                title: 'MINOR SUBDIVISION',
+                icon: 'minorsubdivision'
+            }, {
+                title: 'PLAN APPROVAL',
+                icon: 'planapproval'
+            }, {
+                title: 'SHOPPING CENTER',
+                icon: 'shoppingcenter'
+            }, {
+                title: 'SITE PLAN',
+                icon: 'siteplan'
+            }, {
+                title: 'SPECIAL USE',
+                icon: 'specialuse'
+            }, {
+                title: 'SUBDIVISION',
+                icon: 'subdivision'
+            }];
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.answer = function (answer) {
+                $mdDialog.hide(answer);
+            };
         }
+        $timeout(function () {
+            createMap();
+        }, 200);
+        // *********************************
+        // Internal methods
+        // *********************************
+        function toggleSearch() {
+            $mdSidenav('left').toggle();
+        }
+        var createMap = function () {
+
+            mapboxgl.accessToken = 'pk.eyJ1IjoicmFsZWlnaGdpcyIsImEiOiJjaXByNWg3M2owNnMzZnRtMzdvZHY1MzRsIn0.LiwS3zOOc_i7vDCTiFXIrQ';
+            map = new mapboxgl.Map({
+                container: 'map', // container id
+                style: 'vector-tiles.json',
+                pitch: 0,
+                center: [-78.666, 35.777],
+                zoom: 10
+            });
+            map.addControl(new mapboxgl.Navigation());
+            map.addControl(new mapboxgl.Geolocate({
+                position: 'top-left'
+            }).on('geolocate', geoLocated));
+            $timeout(function () {
+                map.resize();
+            });
+            map.on('load', mapLoaded);
+        };
 
         self.toggleImagery = function () {
-          self.showImage = !self.showImage;
-          if (!self.showImage) {
-            map.removeLayer('wms-test-layer');
-          } else {
-            map.addLayer({
-                'id': 'wms-test-layer',
-                'type': 'raster',
-                'source': 'wms-test',
-                'paint': {}
-            }, 'poi_label');
-          }
+            self.showImage = !self.showImage;
+            if (!self.showImage) {
+                map.removeLayer('wms-test-layer');
+            } else {
+                map.addLayer({
+                    id: 'wms-test-layer',
+                    type: 'raster',
+                    source: 'wms-test',
+                    paint: {}
+                }, 'poi_label');
+            }
         };
 
-        var mapLoaded = function () {    
-          map.addSource('wms-test', {
-              'type': 'raster',
-              'tiles': [
-                  'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
-              ],
-              'tileSize': 256
-          });
+        var mapLoaded = function () {
+            map.addSource('wms-test', {
+                type: 'raster',
+                tiles: [
+                    'https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
+                ],
+                tileSize: 256
+            });
 
-          // map.addLayer({
-          //     'id': 'wms-test-layer',
-          //     'type': 'raster',
-          //     'source': 'wms-test',
-          //     'paint': {}
-          // }, 'aeroway-taxiway');
+            // map.addLayer({
+            //     'id': 'wms-test-layer',
+            //     'type': 'raster',
+            //     'source': 'wms-test',
+            //     'paint': {}
+            // }, 'aeroway-taxiway');
 
 
 
-          map.addSource('buffer', {
-            'type': 'geojson',
-            'data': {
-              "type": "FeatureCollection",
-              "features": []
-            }
-          });
-          map.addLayer({
-            'id': 'buffer',
-            'type': 'line',
-            'source': 'buffer',
-            'layout': {},
-            'paint': {
-              'line-color': '#FF0000',
-              'line-width': 5,
-            }
-          });
-          var pointSource = new mapboxgl.GeoJSONSource({
-            data: {
-              "type": "FeatureCollection",
-              "features": []
-            },
-            cluster: true,
-            clusterMaxZoom: 16, // Max zoom to cluster points on
-            clusterRadius: 50 // Radius of each cluster when clustering points (
+            map.addSource('buffer', {
+                type: 'geojson',
+                data: {
+                    type: "FeatureCollection",
+                    features: []
+                }
+            });
+            map.addLayer({
+                id: 'buffer',
+                type: 'line',
+                source: 'buffer',
+                layout: {},
+                paint: {
+                    "line-color": '#FF0000',
+                    "line-width": 5
+                }
+            });
+            var pointSource = new mapboxgl.GeoJSONSource({
+                data: {
+                    type: "FeatureCollection",
+                    features: []
+                },
+                cluster: true,
+                clusterMaxZoom: 16, // Max zoom to cluster points on
+                clusterRadius: 50 // Radius of each cluster when clustering points (
             });
             map.addSource('points', pointSource);
             map.addLayer({
-              "id": "points",
-              "type": "symbol",
-              "source": "points",
-              "layout": {
-                "icon-image": "{marker-symbol}"
-              },
-              "paint": {},
-              "interactive": true
+                id: "points",
+                type: "symbol",
+                source: "points",
+                layout: {
+                    "icon-image": "{marker-symbol}"
+                },
+                paint: {},
+                interactive: true
             });
             // Cluster categories
             var highCount = 75,
-            lowCount = 15;
+                lowCount = 15;
             self.layers = [
-              [150, '#f28cb1'],
-              [20, '#f1f075'],
-              [0, '#51bbd6']
+                [150, '#f28cb1'],
+                [20, '#f1f075'],
+                [0, '#51bbd6']
             ];
             self.heatLayers = [
-              [50, 'red'],
-              [20, 'orange'],
-              [0, 'green']
+                [50, 'red'],
+                [20, 'orange'],
+                [0, 'green']
             ];
             self.layers.forEach(function (layer, i) {
-              map.addLayer({
-                "id": "cluster-" + i,
-                "type": "circle",
-                "source": "points",
-                "paint": {
-                  "circle-color": layer[1],
-                  "circle-radius": 18
-                },
-                "filter": i == 0 ?
-                [">=", "point_count", layer[0]] :
-                ["all",
-                [">=", "point_count", layer[0]],
-                ["<", "point_count", self.layers[i - 1][0]]]
-              });
+                map.addLayer({
+                    id: "cluster-" + i,
+                    type: "circle",
+                    source: "points",
+                    paint: {
+                        "circle-color": layer[1],
+                        "circle-radius": 18
+                    },
+                    filter: i == 0 ? [">=", "point_count", layer[0]] : ["all", [">=", "point_count", layer[0]],
+                        ["<", "point_count", self.layers[i - 1][0]]
+                    ]
+                });
             });
             map.addLayer({
-              "id": "cluster-count",
-              "type": "symbol",
-              "source": "points",
-              "layout": {
-                "text-field": "{point_count}",
-                "text-font": [
-                  "Open Sans Semibold"
-                ],
-                "text-size": 12
-              }
+                id: "cluster-count",
+                type: "symbol",
+                source: "points",
+                layout: {
+                    "text-field": "{point_count}",
+                    "text-font": [
+                        "Open Sans Semibold"
+                    ],
+                    "text-size": 12
+                }
             });
 
             map.on('mousemove', mapMouseMove);
             map.on('click', mapClicked);
             self.search();
-          }
-          var geoLocated = function (e) {
+        };
+        var createGeoJSONCircle = function(center, radiusInKm, points) {
+            if(!points) points = 64;
+
+            var coords = {
+                latitude: center[1],
+                longitude: center[0]
+            };
+
+            var km = radiusInKm/1000;
+
+            var ret = [];
+            var distanceX = km/(111.320*Math.cos(coords.latitude*Math.PI/180));
+            var distanceY = km/110.574;
+
+            var theta, x, y;
+            for(var i=0; i<points; i++) {
+                theta = (i/points)*(2*Math.PI);
+                x = distanceX*Math.cos(theta);
+                y = distanceY*Math.sin(theta);
+
+                ret.push([coords.longitude+x, coords.latitude+y]);
+            }
+            ret.push(ret[0]);
+
+            return {
+                "type": "geojson",
+                "data": {
+                    "type": "FeatureCollection",
+                    "features": [{
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Polygon",
+                            "coordinates": [ret]
+                        }
+                    }]
+                }
+            };
+        };        
+        var geoLocated = function (e) {
             map.setPitch(60);
             if (self.selectedDistance.value > 0) {
-              clicked = true;
-              mapClickPt = {geometry: { x: data.coords.longitude, y: data.coords.latitude}};
-              bufferAddress(mapClickPt);
+                clicked = true;
+                mapClickPt = {
+                    geometry: {
+                        x: data.coords.longitude,
+                        y: data.coords.latitude
+                    }
+                };
+                bufferAddress(mapClickPt);
             }
-          }
-          var mapMouseMove = function (e) {
-            var features = map.queryRenderedFeatures(e.point, { layers: ['points'] });
+        };
+        var mapMouseMove = function (e) {
+            var features = map.queryRenderedFeatures(e.point, {
+                layers: ['points']
+            });
             map.getCanvas().style.cursor = features.length ? 'pointer' : '';
-          }
-          var popupId = 0;
-          var popup = null;
-          var popupFeatures = [];
-          var openNextPopup = function () {
+        };
+        var popupId = 0;
+        var popup = null;
+        var popupFeatures = [];
+        var openNextPopup = function () {
             popupId += 1;
             createPopup(popupFeatures[popupId], map, popup);
-          }
-          var createPopup = function (features, map, popup, id) {
+        };
+        var createPopup = function (features, map, popup, id) {
             var feature = features[id];
             popupFeatures = features;
             popupId = 0;
             var html = "";
-            for (var i = 0;i < self.selectedSearch.columns.length;i++) {
+            var i = 0;
+            for (i = 0; i < self.selectedSearch.columns.length; i += 1) {
 
-              if (self.selectedSearch.columns[i].name === 'planurl') {
-                if (feature.properties[self.selectedSearch.columns[i].name]) {
-                  html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> ";                  
-                  html += "<a href='"+feature.properties[self.selectedSearch.columns[i].name] + "' target='_blank'>View</a><br/>";
+                if (self.selectedSearch.columns[i].name === 'planurl') {
+                    if (feature.properties[self.selectedSearch.columns[i].name]) {
+                        html += "<strong>" + self.selectedSearch.columns[i].display + "</strong> ";
+                        html += "<a href='" + feature.properties[self.selectedSearch.columns[i].name] + "' target='_blank'>View</a><br/>";
+                    }
+                } else {
+                    html += "<strong>" + self.selectedSearch.columns[i].display + "</strong> ";
+                    html += feature.properties[self.selectedSearch.columns[i].name] + "<br/>";
                 }
-              } else {
-                html += "<strong>"+self.selectedSearch.columns[i].display + "</strong> ";                
-                html += feature.properties[self.selectedSearch.columns[i].name] +"<br/>"
-              }
             }
             if (features.length > 1) {
-              html += "<a id='next' href='javascript:void(0)' onclick='openNextPopup()'>Next</a>";
+                html += "<a id='next' href='javascript:void(0)' onclick='openNextPopup()'>Next</a>";
 
             }
             popup.setLngLat(feature.geometry.coordinates)
-            .setHTML(html)
-            .addTo(map);   
+                .setHTML(html)
+                .addTo(map);
+
             var nextTag = document.getElementById("next");
-            nextTag.onclick = function () {
-              popupId += 1;
-              createPopup(popupFeatures, map, popup, popupId);
-            };
-          }
-          var mapClicked = function (e) {
+            if (nextTag) {
+                nextTag.onclick = function () {
+                    popupId += 1;
+                    createPopup(popupFeatures, map, popup, popupId);
+                };
+            }
+
+        }
+        var mapClicked = function (e) {
             popup = new mapboxgl.Popup({
-              closeButton: true,
-              closeOnClick: true
+                closeButton: true,
+                closeOnClick: true
             });
-                 
-            var features = map.queryRenderedFeatures([[e.point.x-20,e.point.y-20],[e.point.x+20,e.point.y+20]], { layers: ['points'] });
+
+            var features = map.queryRenderedFeatures([
+                [e.point.x - 20, e.point.y - 20],
+                [e.point.x + 20, e.point.y + 20]
+            ], {
+                layers: ['points']
+            });
             console.log(features.length);
             if (!features.length) {
-              popup.remove();
-              if (self.selectedDistance.value > 0) {
-                clicked = true;
-                lng = e.lngLat.lng;
-                lat = e.lngLat.lat;
-                mapClickPt = {attributes: {ADDRESS: " "} ,geometry: {x: e.lngLat.lng, y: e.lngLat.lat}};
-                bufferAddress({geometry: {x: e.lngLat.lng, y: e.lngLat.lat}});
-              }
-              return;
+                popup.remove();
+                if (self.selectedDistance.value > 0) {
+                    clicked = true;
+                    lng = e.lngLat.lng;
+                    lat = e.lngLat.lat;
+                    mapClickPt = {
+                        attributes: {
+                            ADDRESS: " "
+                        },
+                        geometry: {
+                            x: e.lngLat.lng,
+                            y: e.lngLat.lat
+                        }
+                    };
+                    bufferAddress({
+                        geometry: {
+                            x: e.lngLat.lng,
+                            y: e.lngLat.lat
+                        }
+                    });
+                }
+                return;
             }
             createPopup(features, map, popup, 0);
-          }
-        }
-      })();
+        };
+    }
+})();
