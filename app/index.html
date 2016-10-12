@@ -109,7 +109,7 @@
     </div>
     <div class="table-div" ng-show="vm.showTable" ng-class="{'phone': vm.xs}">
       <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
-        <md-icon md-svg-icon="filter"></md-icon>
+        <md-icon md-svg-icon="{{vm.showFilter ? 'close' : 'filter'}}"></md-icon>
       </md-button>  
       <input id="filterInput" ng-show="vm.showFilter" ng-model="vm.filterValue" placeholder="Search">    
 <!--       <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
@@ -193,6 +193,7 @@ angular
   .icon("subdivision", "./assets/svg/subdivision.svg", 60)
   .icon("filter", "./assets/svg/ic_filter_list_white_24px.svg", 24)
   .icon("search", "./assets/svg/ic_search_white_24px.svg", 24)
+  .icon("close", "./assets/svg/ic_close_24px.svg", 24)  
   .icon("logo", "./assets/ds-logo.svg", 40);
   $mdThemingProvider.theme('default')
   .primaryPalette('blue')
