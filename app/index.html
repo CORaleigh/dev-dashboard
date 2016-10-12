@@ -31,6 +31,7 @@
       <md-button class="menu" hide-gt-sm ng-click="vm.toggleList()" aria-label="Show User List">
         <md-icon md-svg-icon="search" ></md-icon>
       </md-button>
+      <md-icon md-svg-icon="logo" class="logo" ></md-icon>
       <h2>DevelopmentDashboard</h2>
       <md-button class="map-toggle" hide-gt-xs ng-click="vm.toggleTable()" aria-label="Show Table">
         <md-icon md-svg-icon="{{(vm.showTable) ? 'map' : 'view_list'}}"></md-icon>
@@ -191,7 +192,8 @@ angular
   .icon("specialuse", "./assets/svg/specialuse.svg", 60)
   .icon("subdivision", "./assets/svg/subdivision.svg", 60)
   .icon("filter", "./assets/svg/ic_filter_list_white_24px.svg", 24)
-  .icon("search", "./assets/svg/ic_search_white_24px.svg", 24);  
+  .icon("search", "./assets/svg/ic_search_white_24px.svg", 24)
+  .icon("logo", "./assets/ds-logo.svg", 40);
   $mdThemingProvider.theme('default')
   .primaryPalette('blue')
   .accentPalette('red');

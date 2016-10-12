@@ -375,3 +375,9 @@ md-progress-circular {
   left: 40px;
   width: 100px;
 }
+
+.logo {
+  margin: 0 1em 0 0;
+  height: 40px;
+  width: 40px;
+}
