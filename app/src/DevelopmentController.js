@@ -32,7 +32,6 @@
         });
         $scope.selectedRows = [];
         self.searching = false;
-        self.toggleList = self.toggleSearch;
         self.query = {
             order: '-submitted',
             limit: 10,
@@ -370,7 +369,7 @@
         // *********************************
         // Internal methods
         // *********************************
-        self.toggleSearch = function () {
+        self.toggleList = function () {
             $mdSidenav('left').toggle();
         };
         self.createMap = function () {
