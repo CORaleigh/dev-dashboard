@@ -20,6 +20,7 @@ html, body {
   margin: 16px;
   width: 36px;
 }
+
 .table-button.with-map {
     position: absolute;
     bottom: 2em;
