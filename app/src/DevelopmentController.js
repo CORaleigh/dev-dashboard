@@ -377,7 +377,7 @@
             map = new mapboxgl.Map({
                 container: 'map', // container id
                 style: 'vector-tiles.json',
-                pitch: 45,
+                pitch: 60
                 center: [-78.666, 35.83],
                 zoom: 10,
                 maxZoom: 18,
@@ -535,7 +535,11 @@
             };
         };
         self.geoLocated = function (e) {
+<<<<<<< HEAD
             map.setPitch(45);
+=======
+            map.setPitch(60);
+>>>>>>> 6d772669fcb90c532fd370ffc3a02f071e1e7371
             if (self.selectedDistance.value > 0) {
                 clicked = true;
                 mapClickPt = {
