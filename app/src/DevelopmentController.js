@@ -377,7 +377,7 @@
             map = new mapboxgl.Map({
                 container: 'map', // container id
                 style: 'vector-tiles.json',
-                pitch: 60
+                pitch: 60,
                 center: [-78.666, 35.83],
                 zoom: 10,
                 maxZoom: 18,
