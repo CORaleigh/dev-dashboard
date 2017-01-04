@@ -26,6 +26,11 @@
   </style>
 </head>
 <body ng-app="starterApp" layout="column" ng-controller="DevelopmentController as vm" ng-cloak>
+<!--[if lte IE 10]>
+        <div class="browser-warning"><p class="lead"> You are using an outdated browser!</p>
+        <p>This page must be viewed in a modern browser and is does not support version of Internet Explorer below version 11.</p>
+        </div>
+    <![endif]-->
   <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
     <div class="md-toolbar-tools">
       <md-button class="menu" hide-gt-sm ng-click="vm.toggleList()" aria-label="Show User List">
