@@ -70,14 +70,14 @@
       </md-list>
       <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
         <div class="md-toolbar-tools">
-          <h2>Submitted Between</h2>
+          <h2>Date Submitted Range</h2>
         </div>
       </md-toolbar>         
       <md-list>
         <md-list-item>        
           <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
         </md-list-item>            
-        <md-list-item>and</md-list-item>
+        <md-list-item>to</md-list-item>
         <md-list-item>
           <md-datepicker ng-model="vm.toDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
         </md-list-item>            
