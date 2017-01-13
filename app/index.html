@@ -47,11 +47,82 @@
     <md-sidenav  md-is-locked-open="$mdMedia('gt-sm')" md-component-id="left" class="md-whiteframe-z2" >
     <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
       <div class="md-toolbar-tools">
-        <h2>Search</h2>
+        <h2>Search Type</h2>
+      </div>
+    </md-toolbar>   
+      <md-list>
+        <md-list-item>
+          <md-input-container>
+            <label>Dataset</label>
+            <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.searchTypeChanged()" ng-disabled="vm.searching">
+              <md-option ng-value="search" ng-repeat="(index, search) in vm.searches"  ng-selected="index === 0" >{{search.name}}</md-option>
+            </md-select>
+          </md-input-container>
+        </md-list-item>          
+        <md-list-item>
+          <md-input-container>
+            <label>Status</label>
+            <md-select ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
+              <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status}}</md-option>
+            </md-select>
+          </md-input-container>
+        </md-list-item>        
+      </md-list>
+      <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
+        <div class="md-toolbar-tools">
+          <h2>Submitted Between</h2>
+        </div>
+      </md-toolbar>         
+      <md-list>
+        <md-list-item>        
+          <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
+        </md-list-item>            
+        <md-list-item>and</md-list-item>
+        <md-list-item>
+          <md-datepicker ng-model="vm.toDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
+        </md-list-item>            
+      </md-list>        
+      <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
+        <div class="md-toolbar-tools">
+          <h2>Location</h2>
+        </div>
+      </md-toolbar>         
+      <md-list>
+        <md-list-item>        
+          <md-input-container>
+            <label>Distance</label>
+            <md-select ng-model="vm.selectedDistance" ng-change="vm.distanceChanged(vm.selectedDistance.value)" ng-disabled="vm.searching">
+              <md-option ng-value="distance" ng-repeat="(index, distance) in vm.distances" ng-selected="vm.selectedSearch.defaultDistance">{{distance.name}}</md-option>
+            </md-select>
+          </md-input-container>
+        </md-list-item>            
+        <md-list-item>of</md-list-item>
+        <md-list-item>
+          <md-autocomplete
+          ng-disabled="false"
+          md-no-cache="false"
+          md-selected-item="vm.selectedAddress"
+          md-search-text-change="vm.addressTextChange(vm.addressText)"
+          md-search-text="vm.addressText"
+          md-selected-item-change="vm.selectedItemChange(address)"
+          md-items="address in vm.addressSearch(vm.addressText)"
+          md-item-text="address.attributes.ADDRESS"
+          md-min-length="4"
+          md-autoselect="true"
+          placeholder="Enter your address" ng-disabled="vm.searching">
+          <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
+        </md-autocomplete>
+        </md-list-item>           
+      </md-list>
+      <md-list>    
+      <md-button class="md-raised md-primary" ng-click="vm.search()" ng-disabled="vm.searching">Search</md-button>
+
+<!--     <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
+      <div class="md-toolbar-tools">
+        <h2>Search Type</h2>
       </div>
     </md-toolbar>    
-    <div class="content">
-      <h3>Search for</h3>
+    <div>
       <md-input-container>
         <label>Search Type</label>
         <md-select ng-model="vm.selectedSearch" ng-change="vm.devplans = []; vm.searchTypeChanged()" ng-disabled="vm.searching">
@@ -64,11 +135,19 @@
           <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status}}</md-option>
         </md-select>
       </md-input-container>      
-      <h3>Between</h3>
+      <md-toolbar class="md-theme-light">
+        <h2 class="md-toolbar-tools">
+          <span>Date Range</span>
+        </h2>
+      </md-toolbar>
       <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
       <h3>and</h3>
       <md-datepicker ng-model="vm.toDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
-      <h3>Within</h3>
+      <md-toolbar class="md-theme-light">
+        <h2 class="md-toolbar-tools">
+          <span>Location</span>
+        </h2>
+      </md-toolbar>
       <md-input-container>
         <label>Search Type</label>
         <md-select ng-model="vm.selectedDistance" ng-change="vm.distanceChanged(vm.selectedDistance.value)" ng-disabled="vm.searching">
@@ -91,7 +170,7 @@
       <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
     </md-autocomplete>
     <md-button class="md-raised md-primary" ng-click="vm.search()" ng-disabled="vm.searching">Search</md-button>
-    </div>
+    </div> -->
   </md-sidenav>
   <md-content flex id="content">
     <div id="map" ng-style="{'height': (vm.showTable) ? '50%' : '100%'}" ng-hide="vm.showTable && vm.xs">
@@ -113,10 +192,10 @@
       </md-fab-toolbar> 
     </div>
     <div class="table-div" ng-show="vm.showTable" ng-class="{'phone': vm.xs}">
-      <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
+<!--       <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
         <md-icon md-svg-icon="{{vm.showFilter ? 'close' : 'filter'}}"></md-icon>
       </md-button>  
-      <input id="filterInput" ng-show="vm.showFilter" ng-model="vm.filterValue" placeholder="Search">    
+      <input id="filterInput" ng-show="vm.showFilter" ng-model="vm.filterValue" placeholder="Search">    --> 
 <!--       <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
         <label>Filter</label>
         <input ng-model="vm.filterValue">

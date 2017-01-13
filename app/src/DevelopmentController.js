@@ -44,7 +44,7 @@
         self.cluster = true;
         self.showTable = false;
         self.selectedDistance = {
-            name: 'All',
+            name: 'Greater than 2 miles',
             value: 0
         };
         $timeout(function () {
@@ -96,7 +96,7 @@
             latitudeField: 'latitude_planaddr',
             order: '-submitted',
             defaultDistance: {
-                name: 'All'
+                name: 'Greater than 2 miles'
             },
             columns: [{
                 display: 'Plan #',
@@ -218,7 +218,7 @@
             name: '2 miles',
             value: 3218.68
         }, {
-            name: 'All',
+            name: 'Greater than 2 miles',
             value: 0
         }];
         self.distanceChanged = function (distance) {

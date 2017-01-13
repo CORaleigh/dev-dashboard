@@ -22,6 +22,8 @@
             where += statusField + " = '" + status[i] + "'";             
           }
           where += ")";
+        } else {
+          where += " and " + statusField + " = 'NONE'";
         }
         var promise = $http({
             url: 'https://data.raleighnc.gov/resource/'+id+'.json', 

@@ -382,3 +382,8 @@ md-progress-circular {
   height: 40px;
   width: 40px;
 }
+
+
+md-autocomplete {
+  width: 100%;
+}
