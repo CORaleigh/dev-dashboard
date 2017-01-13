@@ -135,10 +135,10 @@
                 name: 'planurl'
             }],
             statuses: [
-                'Active',
-                'Pending',
-                'Review In Progress',
-                'Withdrawn'
+                {name: 'Active', definition: 'Development plans have been approved'},
+                {name: 'Pending', definition: 'Development plans have been approved and pending administrative approval'},
+                {name: 'Review In Progress', definition: 'Development plans are going through the plan review process'},
+                {name: 'Withdrawn', definition: 'Development plans have been withdrawn from plan review'}
             ]
         }, {
             name: 'Permits',
@@ -198,11 +198,11 @@
                 order: 'estprojectcost'
             }],
             statuses: [
-                'Permit Finaled',
-                'Permit Issued',
-                'In Review',
-                'Occupancy',
-                'Permit Cancelled'
+                {name: 'Permit Finaled', definition: 'Permits have been approved and pending payment'},
+                {name: 'Permit Issued', definition: 'Permit fees have been paid and permits issued'}, 
+                {name: 'In Review', definition: 'Permits for the project are going through the plan review process'}, 
+                {name: 'Occupancy', definition: 'All inspections have been finaled/completed and Certificate of Occupancy issued'}, 
+                {name: 'Permit Cancelled', definition: 'Permits have been voided/cancelled after issuance and are no longer valid'}
             ]
         }];
         self.distances = [{
@@ -318,6 +318,16 @@
                 fullscreen: useFullScreen
             });
         };
+        self.showStatusDefinitions = function () {
+            var useFullScreen = ($mdMedia('sm') || $mdMedia('xs'));
+            $mdDialog.show({
+                controller: StatusController,
+                templateUrl: 'src/status.html',
+                parent: angular.element(document.body),
+                clickOutsideToClose: true,
+                fullscreen: useFullScreen
+            });
+        };        
         self.linkClicked = function (e) {
             console.log(e);
         };
@@ -365,7 +375,19 @@
             $scope.answer = function (answer) {
                 $mdDialog.hide(answer);
             };
-        }
+        };
+        function StatusController($scope, $mdDialog) {
+            $scope.definitions = self.selectedSearch.statuses;
+            $scope.hide = function () {
+                $mdDialog.hide();
+            };
+            $scope.cancel = function () {
+                $mdDialog.cancel();
+            };
+            $scope.answer = function (answer) {
+                $mdDialog.hide(answer);
+            };
+        };        
         $timeout(function () {
             self.createMap();
         }, 200);

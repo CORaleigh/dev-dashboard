@@ -60,12 +60,15 @@
           </md-input-container>
         </md-list-item>          
         <md-list-item>
-          <md-input-container>
+          <md-input-container style="margin-left: 18px;">
             <label>Status</label>
             <md-select ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
-              <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status}}</md-option>
+              <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status.name}}</md-option>
             </md-select>
           </md-input-container>
+          <md-button class="md-icon-button" aria-label="Status Info" ng-click="vm.showStatusDefinitions($event)">
+            <md-icon md-svg-icon="info"></md-icon>
+          </md-button>
         </md-list-item>        
       </md-list>
       <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
@@ -255,6 +258,7 @@ angular
   $mdIconProvider
   .defaultIconSet("./assets/svg/avatars.svg", 128)
   .icon("menu", "./assets/svg/menu.svg", 24)
+  .icon("info", "./assets/svg/info.svg", 24)  
   .icon("share", "./assets/svg/share.svg", 24)
   .icon("view_list", "./assets/svg/view_list.svg", 24)
   .icon("map", "./assets/svg/ic_map_white_24px.svg", 24)

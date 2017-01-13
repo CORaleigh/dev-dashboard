@@ -19,7 +19,7 @@
             if (i > 0) {
               where +=  " or ";
             } 
-            where += statusField + " = '" + status[i] + "'";             
+            where += statusField + " = '" + status[i].name + "'";             
           }
           where += ")";
         } else {

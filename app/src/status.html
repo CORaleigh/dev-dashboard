@@ -1,0 +1,21 @@
+<md-dialog aria-label="Marker Key"  ng-cloak>
+  <form>
+    <md-toolbar>
+      <div class="md-toolbar-tools">
+        <h2>Status Definitions</h2>
+        <span flex></span>
+        <md-button class="md-icon-button" ng-click="cancel()">
+          <md-icon md-svg-src="assets/svg/ic_close_24px.svg" aria-label="Close dialog"></md-icon>
+        </md-button>
+      </div>
+    </md-toolbar>
+    <md-dialog-content>
+      <div class="md-dialog-content">
+        <md-grid-list
+              md-cols="3" md-row-height="6:2" md-gutter="12px" ng-repeat="definition in definitions">
+              <md-grid-tile md-rowspan="1" md-colspan="1" class="gray"><span><strong>{{definition.name}}</strong></span></md-grid-tile>
+              <md-grid-tile class="gray" md-rowspan="1" md-colspan="2"><span>{{definition.definition}}</span></md-grid-tile>              
+        </md-grid-list>     
+      </div>
+  </form>
+</md-dialog>
