@@ -352,6 +352,9 @@
             }, {
                 title: 'SUBDIVISION',
                 icon: 'subdivision'
+            }, {
+                title: 'PERMIT',
+                icon: 'permit'
             }];
             $scope.hide = function () {
                 $mdDialog.hide();
