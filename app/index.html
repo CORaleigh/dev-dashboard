@@ -62,7 +62,7 @@
         <md-list-item>
           <md-input-container style="margin-left: 18px;">
             <label>Status</label>
-            <md-select ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
+            <md-select id="statusSelect" ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
               <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status.name}}</md-option>
             </md-select>
           </md-input-container>

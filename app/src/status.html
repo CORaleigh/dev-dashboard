@@ -12,7 +12,7 @@
     <md-dialog-content>
       <div class="md-dialog-content">
         <md-grid-list
-              md-cols="3" md-row-height="6:2" md-gutter="12px" ng-repeat="definition in definitions">
+              md-cols="3"  md-gutter="12px" ng-repeat="definition in definitions" md-row-height-gt-sm="6:2" md-row-height="3:2">
               <md-grid-tile md-rowspan="1" md-colspan="1" class="gray"><span><strong>{{definition.name}}</strong></span></md-grid-tile>
               <md-grid-tile class="gray" md-rowspan="1" md-colspan="2"><span>{{definition.definition}}</span></md-grid-tile>              
         </md-grid-list>     

@@ -396,3 +396,7 @@ md-grid-list md-grid-tile figure {
   justify-content: flex-start;
   padding: 1em;
 }
+
+#statusSelect {
+  max-width: 250px;
+}
