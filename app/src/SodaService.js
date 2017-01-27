@@ -30,7 +30,7 @@
             method: "GET",
             params: {
               '$where': where,
-              '$limit': 2000,
+              '$limit': 5000,
               '$order': dateField + ' DESC'
             }
          }).then(function (response) {
