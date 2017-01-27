@@ -38,7 +38,7 @@
             page: 1
         };
         self.fromDate = new Date();
-        self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 90);
+        self.fromDate = self.fromDate.setDate(self.fromDate.getDate() - 180);
         self.fromDate = new Date(self.fromDate);
         self.toDate = new Date();
         self.cluster = true;
