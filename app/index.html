@@ -24,6 +24,16 @@
     display: none !important;
   }
   </style>
+  <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+    (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-11110258-44', 'auto');
+    ga('send', 'pageview');
+
+  </script>  
 </head>
 <body ng-app="starterApp" layout="column" ng-controller="DevelopmentController as vm" ng-cloak>
 <!--[if lte IE 10]>
@@ -50,7 +60,7 @@
       <div class="md-toolbar-tools">
         <h2>Search Type</h2>
       </div>
-    </md-toolbar>   
+    </md-toolbar>
       <md-list>
         <md-list-item>
           <md-input-container>
@@ -59,7 +69,7 @@
               <md-option ng-value="search" ng-repeat="(index, search) in vm.searches"  ng-selected="index === 0" >{{search.name}}</md-option>
             </md-select>
           </md-input-container>
-        </md-list-item>          
+        </md-list-item>
         <md-list-item>
           <md-input-container style="margin-left: 18px;">
             <label>Status</label>
@@ -70,36 +80,36 @@
           <md-button class="md-icon-button" aria-label="Status Info" ng-click="vm.showStatusDefinitions($event)">
             <md-icon md-svg-icon="info"></md-icon>
           </md-button>
-        </md-list-item>        
+        </md-list-item>
       </md-list>
       <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
         <div class="md-toolbar-tools">
           <h2>Date Submitted Range</h2>
         </div>
-      </md-toolbar>         
+      </md-toolbar>
       <md-list>
-        <md-list-item>        
+        <md-list-item>
           <md-datepicker ng-model="vm.fromDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
-        </md-list-item>            
+        </md-list-item>
         <md-list-item>to</md-list-item>
         <md-list-item>
           <md-datepicker ng-model="vm.toDate" md-placeholder="Enter date" ng-change="vm.search()" ng-disabled="vm.searching"></md-datepicker>
-        </md-list-item>            
-      </md-list>        
+        </md-list-item>
+      </md-list>
       <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
         <div class="md-toolbar-tools">
           <h2>Location</h2>
         </div>
-      </md-toolbar>         
+      </md-toolbar>
       <md-list>
-        <md-list-item>        
+        <md-list-item>
           <md-input-container>
             <label>Distance</label>
             <md-select ng-model="vm.selectedDistance" ng-change="vm.distanceChanged(vm.selectedDistance.value)" ng-disabled="vm.searching">
               <md-option ng-value="distance" ng-repeat="(index, distance) in vm.distances" ng-selected="vm.selectedSearch.defaultDistance">{{distance.name}}</md-option>
             </md-select>
           </md-input-container>
-        </md-list-item>            
+        </md-list-item>
         <md-list-item>of</md-list-item>
         <md-list-item>
           <md-autocomplete
@@ -116,16 +126,16 @@
           placeholder="Enter your address" ng-disabled="vm.searching">
           <span md-highlight-text="searchText">{{address.attributes.ADDRESS}}</span>
         </md-autocomplete>
-        </md-list-item>           
+        </md-list-item>
       </md-list>
-      <md-list>    
+      <md-list>
       <md-button class="md-raised md-primary" ng-click="vm.search()" ng-disabled="vm.searching">Search</md-button>
 
 <!--     <md-toolbar layout="row" ng-class="{'phone': vm.xs}">
       <div class="md-toolbar-tools">
         <h2>Search Type</h2>
       </div>
-    </md-toolbar>    
+    </md-toolbar>
     <div>
       <md-input-container>
         <label>Search Type</label>
@@ -138,7 +148,7 @@
         <md-select ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
           <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status}}</md-option>
         </md-select>
-      </md-input-container>      
+      </md-input-container>
       <md-toolbar class="md-theme-light">
         <h2 class="md-toolbar-tools">
           <span>Date Range</span>
@@ -178,7 +188,7 @@
   </md-sidenav>
   <md-content flex id="content">
     <div id="map" ng-style="{'height': (vm.showTable) ? '50%' : '100%'}" ng-hide="vm.showTable && vm.xs">
-      <md-button class="md-raised map-button" ng-click="vm.toggleImagery()">{{vm.showImage ? 'Street' : 'Imagery'}}</md-button>    
+      <md-button class="md-raised map-button" ng-click="vm.toggleImagery()">{{vm.showImage ? 'Street' : 'Imagery'}}</md-button>
       <md-fab-toolbar md-open="demo.isOpen" count="demo.count"
                       md-direction="left">
         <md-fab-trigger class="align-with-text">
@@ -193,17 +203,17 @@
             <md-button hide-xs ng-click="vm.toggleTable()">{{(vm.showTable) ? 'Hide Table' : 'Show Table'}}</md-button>
           </md-fab-actions>
         </md-toolbar>
-      </md-fab-toolbar> 
+      </md-fab-toolbar>
     </div>
     <div class="table-div" ng-show="vm.showTable" ng-class="{'phone': vm.xs}">
 <!--       <md-button id="filterButton" ng-click="vm.toggleFilter()" class="md-icon-button" >
         <md-icon md-svg-icon="{{vm.showFilter ? 'close' : 'filter'}}"></md-icon>
-      </md-button>  
-      <input id="filterInput" ng-show="vm.showFilter" ng-model="vm.filterValue" placeholder="Search">    --> 
+      </md-button>
+      <input id="filterInput" ng-show="vm.showFilter" ng-model="vm.filterValue" placeholder="Search">    -->
 <!--       <md-input-container ng-show="vm.showFilter" style="background-color: white;z-index:1; position: absolute">
         <label>Filter</label>
         <input ng-model="vm.filterValue">
-      </md-input-container>    -->  
+      </md-input-container>    -->
       <md-table-container ng-class="{'phone': vm.xs}">
         <table data-md-table data-md-row-select="true" multiple="false" data-ng-model="selectedRows" md-progress="vm.promise" >
           <thead md-head md-order="vm.selectedSearch.order">
@@ -217,7 +227,7 @@
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_name}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_type}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.submitted | date: 'fullDate'}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.approved | date: 'fullDate'}}</td>              
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.approved | date: 'fullDate'}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.status}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.zoning}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.cac}}</td>
@@ -226,8 +236,8 @@
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.proposedworkdescription}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.workclass}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.originaladdress1}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.statuscurrentmapped}}</td> 
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.applieddate | date: 'fullDate'}}</td>                         
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.statuscurrentmapped}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.applieddate | date: 'fullDate'}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.issueddate | date: 'fullDate'}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.parcelownername}}</td>
               <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.contractorcompanyname}}</td>
@@ -238,7 +248,7 @@
         </table>
       </md-table-container>
       <data-md-table-pagination md-limit="vm.query.limit" md-limit-options="[5, 10, 25, 50]" md-page="vm.query.page" md-total="{{vm.devplans.length}}" md-page-select="true" md-boundary-links="false">
-      </data-md-table-pagination>      
+      </data-md-table-pagination>
     </div>
   </md-content>
   <md-progress-circular ng-show="vm.searching" md-diameter="150"></md-progress-circular>
@@ -259,7 +269,7 @@ angular
   $mdIconProvider
   .defaultIconSet("./assets/svg/avatars.svg", 128)
   .icon("menu", "./assets/svg/menu.svg", 24)
-  .icon("info", "./assets/svg/info.svg", 24)  
+  .icon("info", "./assets/svg/info.svg", 24)
   .icon("share", "./assets/svg/share.svg", 24)
   .icon("view_list", "./assets/svg/view_list.svg", 24)
   .icon("map", "./assets/svg/ic_map_white_24px.svg", 24)
@@ -278,12 +288,12 @@ angular
   .icon("shoppingcenter", "./assets/svg/shoppingcenter.svg", 60)
   .icon("siteplan", "./assets/svg/siteplan.svg", 60)
   .icon("sitereview", "./assets/svg/sitereview.svg", 60)
-  .icon("permit", "./assets/svg/permit.svg", 60)  
+  .icon("permit", "./assets/svg/permit.svg", 60)
   .icon("specialuse", "./assets/svg/specialuse.svg", 60)
   .icon("subdivision", "./assets/svg/subdivision.svg", 60)
   .icon("filter", "./assets/svg/ic_filter_list_white_24px.svg", 24)
   .icon("search", "./assets/svg/ic_search_white_24px.svg", 24)
-  .icon("close", "./assets/svg/ic_close_24px.svg", 24)  
+  .icon("close", "./assets/svg/ic_close_24px.svg", 24)
   .icon("logo", "./assets/ds-logo.svg", 40);
   $mdThemingProvider.theme('default')
   .primaryPalette('blue')
