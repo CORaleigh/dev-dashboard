@@ -4,9 +4,9 @@
         .module('development')
         .controller('DevelopmentController', [
             'sodaService', '$mdSidenav', '$timeout', '$http',
-            '$scope', '$mdDialog', '$mdMedia', '$window', DevelopmentController
+            '$scope', '$mdDialog', '$mdMedia', '$window', 'agolService', DevelopmentController
         ]);
-    function DevelopmentController(sodaService, $mdSidenav, $timeout, $http, $scope, $mdDialog, $mdMedia, $window) {
+    function DevelopmentController(sodaService, $mdSidenav, $timeout, $http, $scope, $mdDialog, $mdMedia, $window, agolService) {
         $scope.filter = {
             show: false
         };
@@ -33,7 +33,7 @@
         $scope.selectedRows = [];
         self.searching = false;
         self.query = {
-            order: '-submitted',
+            order: 'properties.-submitted',
             limit: 10,
             page: 1
         };
@@ -89,47 +89,47 @@
         self.searches = [{
             name: 'Development Plans',
             id: '437m-z3m8',
+            url: 'https://services.arcgis.com/v400IkDOw1ad7Yad/ArcGIS/rest/services/Development_Plans/FeatureServer/0',
             dateField: 'submitted',
             statusField: 'status',
             addressField: 'geocoded_planaddr',
             longitudeField: 'longitude_planaddr',
             latitudeField: 'latitude_planaddr',
-            order: '-submitted',
             defaultDistance: {
                 name: 'Greater than 2 miles'
             },
             columns: [{
                 display: 'Plan #',
                 name: 'plan_number',
-                order: 'plan_number'
+                order: 'properties.plan_number'
             }, {
                 display: 'Plan Name',
                 name: 'plan_name',
-                order: 'plan_name'
+                order: 'properties.plan_name'
             }, {
                 display: 'Plan Type',
                 name: 'plan_type',
-                order: 'plan_type'
+                order: 'properties.plan_type'
             }, {
                 display: 'Submitted',
                 name: 'submitted',
-                order: 'submitted'
+                order: 'properties.submitted'
             }, {
                 display: 'Approved',
                 name: 'approved',
-                order: 'approved'
+                order: 'properties.approved'
             }, {
                 display: 'Status',
                 name: 'status',
-                order: 'status'
+                order: 'properties.status'
             }, {
                 display: 'Zoning',
                 name: 'zoning',
-                order: 'zoning'
+                order: 'properties.zoning'
             }, {
                 display: 'CAC',
                 name: 'cac',
-                order: 'cac'
+                order: 'properties.cac'
             }, {
                 display: 'Document',
                 name: 'planurl'
@@ -143,59 +143,59 @@
         }, {
             name: 'Permits',
             id: 'xce4-kemu',
+            url: 'https://services.arcgis.com/v400IkDOw1ad7Yad/arcgis/rest/services/Building_Permits/FeatureServer/0',
             dateField: 'applieddate',
             statusField: 'statuscurrentmapped',
             addressField: 'geocoded_permaddr',
             longitudeField: 'longitude_perm',
             latitudeField: 'latitude_perm',
-            order: '-applieddate',
             defaultDistance: {
                 name: '1 mile'
             },
             columns: [{
                 display: 'Permit #',
                 name: 'permitnum',
-                order: 'permitnum'
+                order: 'properties.permitnum'
             }, {
                 display: 'Proposed Work',
                 name: 'proposedworkdescription',
-                order: 'proposedworkdescription'
+                order: 'properties.proposedworkdescription'
             }, {
                 display: 'Authorized Work',
                 name: 'workclass',
-                order: 'workclass'
+                order: 'properties.workclass'
             }, {
                 display: 'Address',
                 name: 'originaladdress1',
-                order: 'originaladdress1'
+                order: 'properties.originaladdress1'
             }, {
                 display: 'Status',
                 name: 'statuscurrentmapped',
-                order: 'statuscurrentmapped'
+                order: 'properties.statuscurrentmapped'
             }, {
                 display: 'Applied',
                 name: 'applieddate',
-                order: '-applieddate'
+                order: 'properties.-applieddate'
             }, {
                 display: 'Issued',
                 name: 'issueddate',
-                order: '-issueddate'
+                order: 'properties.-issueddate'
             }, {
                 display: 'Owner',
                 name: 'parcelownername',
-                order: 'parcelownername'
+                order: 'properties.parcelownername'
             }, {
                 display: 'Contractor',
                 name: 'contractorcompanyname',
-                order: 'contractorcompanyname'
+                order: 'properties.contractorcompanyname'
             }, {
                 display: 'Sq Footage',
                 name: 'totalsqft',
-                order: 'totalsqft'
+                order: 'properties.totalsqft'
             }, {
                 display: 'Cost',
                 name: 'estprojectcost',
-                order: 'estprojectcost'
+                order: 'properties.estprojectcost'
             }],
             statuses: [
                 {name: 'Permit Finaled', definition: 'Permits have been approved and pending payment'},
@@ -278,9 +278,7 @@
         };
         self.rowSelected = function () {
             map.flyTo({
-                center: [
-                    this.model[self.selectedSearch.longitudeField], this.model[self.selectedSearch.latitudeField]
-                ],
+                center: this.model.geometry.coordinates,
                 zoom: 17
             });
             if (self.xs) {
@@ -296,14 +294,19 @@
             self.search();
         };
         self.search = function () {
-            if (map) {
+            if (map && !self.searching) {
                 self.promise = $timeout(function () {
                     console.log('loaded');
                 }, 2000);
                 self.searching = true;
-                sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, moment(self.fromDate).format('YYYY-MM-DD'), moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
-                    self.devplans = data;
-                    sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
+                // sodaService.loadData(self.selectedSearch.id, self.selectedSearch.dateField, self.selectedSearch.statusField, moment(self.fromDate).format('YYYY-MM-DD'), moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
+                //     self.devplans = data;
+                //     sodaService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
+                //     self.searching = false;
+                // });
+                agolService.loadData(self.selectedSearch.url, self.selectedSearch.dateField, self.selectedSearch.statusField, moment(self.fromDate).format('YYYY-MM-DD'), moment(self.toDate).format('YYYY-MM-DD'), self.selectedStatus, self.selectedSearch.addressField, self.selectedDistance.value, lng, lat).then(function (data) {
+                    self.devplans = data.features;
+                    agolService.dataToGeoJson(data, map, self.selectedSearch.longitudeField, self.selectedSearch.latitudeField, self.selectedSearch.columns, self.selectedSearch.dateField);
                     self.searching = false;
                 });
             }
@@ -402,7 +405,7 @@
             map = new mapboxgl.Map({
                 container: 'map', // container id
                 style: 'vector-tiles.json',
-                pitch: 60,
+                pitch: 0,
                 center: [-78.666, 35.83],
                 zoom: 10,
                 maxZoom: 18,

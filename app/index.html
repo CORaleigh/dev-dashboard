@@ -73,7 +73,7 @@
         <md-list-item>
           <md-input-container style="margin-left: 18px;">
             <label>Status</label>
-            <md-select id="statusSelect" ng-model="vm.selectedStatus" ng-change="vm.search()" ng-disabled="vm.searching" multiple>
+            <md-select id="statusSelect" ng-model="vm.selectedStatus" ng-change="vm.search(vm.selectedStatus)" ng-disabled="vm.searching" multiple>
               <md-option ng-value="status" ng-repeat="(index, status) in vm.selectedSearch.statuses">{{status.name}}</md-option>
             </md-select>
           </md-input-container>
@@ -222,27 +222,27 @@
             </tr>
           </thead>
           <tbody md-body>
-            <tr md-row md-select="devplan" md-auto-select ng-repeat="devplan in vm.devplans | filter: vm.filterValue | orderBy: vm.selectedSearch.order | limitTo: vm.query.limit : (vm.query.page - 1) * vm.query.limit" data-md-on-select="vm.rowSelected">
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_number}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_name}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.plan_type}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.submitted | date: 'fullDate'}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.approved | date: 'fullDate'}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.status}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.zoning}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.cac}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'"><md-button data-num="{{devplan.plan_number}}" ng-show="devplan.planurl.url" class="md-primary" ng-href="{{devplan.planurl.url}}" target="_blank" ng-click="vm.linkClicked($event)">View</md-button></td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.permitnum}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.proposedworkdescription}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.workclass}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.originaladdress1}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.statuscurrentmapped}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.applieddate | date: 'fullDate'}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.issueddate | date: 'fullDate'}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.parcelownername}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.contractorcompanyname}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.totalsqft | number}}</td>
-              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.estprojectcost | currency}}</td>
+            <tr md-row md-select="devplan" ng-disabled="!devplan.geometry" md-auto-select ng-repeat="devplan in vm.devplans | filter: vm.filterValue | orderBy: vm.selectedSearch.order | limitTo: vm.query.limit : (vm.query.page - 1) * vm.query.limit" data-md-on-select="vm.rowSelected">
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.plan_number}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.plan_name}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.plan_type}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.submitted | date: 'fullDate'}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.approved | date: 'fullDate'}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.status}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.zoning}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'">{{devplan.properties.cac}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Development Plans'"><md-button data-num="{{devplan.properties.plan_number}}" ng-show="devplan.properties.planurl" class="md-primary" ng-href="{{devplan.properties.planurl}}" target="_blank" ng-click="vm.linkClicked($event)">View</md-button></td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.permitnum}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.proposedworkdescription}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.workclass}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.originaladdress1}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.statuscurrentmapped}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.applieddate | date: 'fullDate'}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.issueddate | date: 'fullDate'}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.parcelownername}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.contractorcompanyname}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.totalsqft | number}}</td>
+              <td md-cell ng-if="vm.selectedSearch.name === 'Permits'">{{devplan.properties.estprojectcost | currency}}</td>
             </tr>
           </tbody>
         </table>
@@ -262,9 +262,11 @@
 <script src="./src/DevelopmentController.js"></script>
 <script src="./src/Soda.js"></script>
 <script src="./src/SodaService.js"></script>
+<script src="./src/Agol.js"></script>
+<script src="./src/AgolService.js"></script>
 <script type="text/javascript">
 angular
-.module('starterApp', ['ngMaterial', 'development', 'md.data.table', 'soda'])
+.module('starterApp', ['ngMaterial', 'development', 'md.data.table', 'soda', 'agol'])
 .config(function($mdThemingProvider, $mdIconProvider){
   $mdIconProvider
   .defaultIconSet("./assets/svg/avatars.svg", 128)
