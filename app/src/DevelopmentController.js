@@ -412,9 +412,9 @@
                 minZoom: 9
             });
             map.addControl(new mapboxgl.Navigation());
-            map.addControl(new mapboxgl.Geolocate({
-                position: 'top-left'
-            }).on('geolocate', self.geoLocated));
+            // map.addControl(new mapboxgl.Geolocate({
+            //     position: 'top-left'
+            // }).on('geolocate', self.geoLocated));
             $timeout(function () {
                 map.resize();
             });
@@ -563,7 +563,7 @@
             };
         };
         self.geoLocated = function (e) {
-            map.setPitch(60);
+            //map.setPitch(60);
             if (self.selectedDistance.value > 0) {
                 clicked = true;
                 mapClickPt = {

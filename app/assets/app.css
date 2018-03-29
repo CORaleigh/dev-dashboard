@@ -373,7 +373,7 @@ md-progress-circular {
   position: absolute;
   z-index: 20;
   top: 4px;
-  left: 40px;
+  left: 0px;
   width: 100px;
 }
 
@@ -399,4 +399,8 @@ md-grid-list md-grid-tile figure {
 
 #statusSelect {
   max-width: 250px;
+}
+
+.md-icon-button {
+  margin: 0 !important;
 }
